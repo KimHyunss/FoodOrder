@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
 
@@ -46,9 +47,9 @@ export const Hero = () => {
                 </div>
                 <div className="text-left font-mono text-sm">
                   <div className="text-muted-foreground">// Welcome to the future</div>
-                  <div className="text-primary">const innovation = () => {</div>
-                  <div className="ml-4 text-foreground">return "endless possibilities";</div>
-                  <div className="text-primary">}</div>
+                  <div className="text-primary">const innovation = () =&gt; {"{"}</div>
+                  <div className="ml-4 text-foreground">return &quot;endless possibilities&quot;;</div>
+                  <div className="text-primary">{"}"}</div>
                 </div>
               </div>
             </div>
