@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,10 +42,10 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
   if (items.length === 0) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center py-16 bg-white/80 backdrop-blur rounded-3xl shadow-lg">
-          <ShoppingCart size={64} className="mx-auto text-muted-foreground mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Keranjang Kosong</h2>
-          <p className="text-muted-foreground">Tambahkan makanan atau minuman ke keranjang Anda</p>
+        <div className="text-center py-16 bg-white/90 backdrop-blur rounded-3xl shadow-lg border border-gray-200">
+          <ShoppingCart size={64} className="mx-auto text-gray-400 mb-4" />
+          <h2 className="text-2xl font-bold mb-2 text-gray-800">Keranjang Kosong</h2>
+          <p className="text-gray-600">Tambahkan makanan atau minuman ke keranjang Anda</p>
         </div>
       </div>
     );
@@ -55,16 +54,16 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold mb-4 text-white drop-shadow-lg">Keranjang Belanja</h1>
-        <p className="text-xl text-white/80 drop-shadow">Review pesanan Anda sebelum checkout</p>
+        <h1 className="text-4xl font-bold mb-4 text-gray-800">Keranjang Belanja</h1>
+        <p className="text-xl text-gray-600">Review pesanan Anda sebelum checkout</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <Card className="bg-white/90 backdrop-blur border border-white/20 shadow-lg">
+          <Card className="bg-white/95 backdrop-blur border border-gray-200 shadow-lg">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Item Pesanan</CardTitle>
+                <CardTitle className="text-gray-800">Item Pesanan</CardTitle>
                 <Button variant="outline" size="sm" onClick={onClearCart}>
                   <Trash2 size={16} className="mr-2" />
                   Kosongkan
@@ -74,10 +73,10 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
             <CardContent>
               <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg bg-white/50">
+                  <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg bg-gray-50/70 border-gray-200">
                     <div className="flex-1">
-                      <h3 className="font-semibold">{item.name}</h3>
-                      <p className="text-muted-foreground">{formatPrice(item.price)}</p>
+                      <h3 className="font-semibold text-gray-800">{item.name}</h3>
+                      <p className="text-gray-600">{formatPrice(item.price)}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <Button
@@ -87,7 +86,7 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
                       >
                         <Minus size={16} />
                       </Button>
-                      <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                      <span className="w-8 text-center font-semibold text-gray-800">{item.quantity}</span>
                       <Button
                         variant="outline"
                         size="icon"
@@ -95,7 +94,7 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
                       >
                         <Plus size={16} />
                       </Button>
-                      <div className="w-20 text-right font-semibold">
+                      <div className="w-20 text-right font-semibold text-gray-800">
                         {formatPrice(item.price * item.quantity)}
                       </div>
                     </div>
@@ -107,14 +106,14 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
         </div>
 
         <div>
-          <Card className="bg-white/90 backdrop-blur border border-white/20 shadow-lg">
+          <Card className="bg-white/95 backdrop-blur border border-gray-200 shadow-lg">
             <CardHeader>
-              <CardTitle>Ringkasan Pesanan</CardTitle>
+              <CardTitle className="text-gray-800">Ringkasan Pesanan</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between text-lg font-semibold">
-                  <span>Total:</span>
+                  <span className="text-gray-800">Total:</span>
                   <span className="text-primary">{formatPrice(total)}</span>
                 </div>
 
@@ -129,23 +128,23 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
                 ) : (
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="name">Nama Lengkap</Label>
+                      <Label htmlFor="name" className="text-gray-700">Nama Lengkap</Label>
                       <Input
                         id="name"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
                         placeholder="Masukkan nama Anda"
-                        className="bg-white/70"
+                        className="bg-white/90 text-gray-800"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="phone">Nomor Telepon</Label>
+                      <Label htmlFor="phone" className="text-gray-700">Nomor Telepon</Label>
                       <Input
                         id="phone"
                         value={customerPhone}
                         onChange={(e) => setCustomerPhone(e.target.value)}
                         placeholder="Masukkan nomor telepon"
-                        className="bg-white/70"
+                        className="bg-white/90 text-gray-800"
                       />
                     </div>
                     <div className="flex gap-2">

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Menu } from "@/components/Menu";
@@ -86,7 +85,7 @@ const Index = () => {
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 text-foreground">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900">
       <Navigation 
         activeTab={activeTab} 
         setActiveTab={setActiveTab}
