@@ -86,7 +86,7 @@ const Index = () => {
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 text-foreground">
       <Navigation 
         activeTab={activeTab} 
         setActiveTab={setActiveTab}

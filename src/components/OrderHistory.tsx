@@ -71,7 +71,7 @@ export const OrderHistory = ({ orders }: OrderHistoryProps) => {
   if (orders.length === 0) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center py-16">
+        <div className="text-center py-16 bg-white/80 backdrop-blur rounded-3xl shadow-lg">
           <Package size={64} className="mx-auto text-muted-foreground mb-4" />
           <h2 className="text-2xl font-bold mb-2">Belum Ada Pesanan</h2>
           <p className="text-muted-foreground">Pesanan Anda akan muncul di sini</p>
@@ -82,14 +82,14 @@ export const OrderHistory = ({ orders }: OrderHistoryProps) => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Riwayat Pesanan</h1>
-        <p className="text-xl text-muted-foreground">Lihat status dan riwayat pesanan Anda</p>
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-bold mb-4 text-white drop-shadow-lg">Riwayat Pesanan</h1>
+        <p className="text-xl text-white/80 drop-shadow">Lihat status dan riwayat pesanan Anda</p>
       </div>
 
       <div className="space-y-6">
         {orders.map((order) => (
-          <Card key={order.id}>
+          <Card key={order.id} className="bg-white/90 backdrop-blur border border-white/20 shadow-lg">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">
