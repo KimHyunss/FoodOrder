@@ -1,9 +1,15 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Menu } from "@/components/Menu";
 import { Cart } from "@/components/Cart";
 import { OrderHistory } from "@/components/OrderHistory";
 import { Footer } from "@/components/Footer";
+import { UserChat } from "@/components/UserChat";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { MessageCircle, Bell } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export type MenuItem = {
   id: number;
@@ -35,6 +41,38 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<'menu' | 'cart' | 'orders'>('menu');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [hasNewMessages, setHasNewMessages] = useState(false);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const { toast } = useToast();
+
+  // Check for new notifications
+  useEffect(() => {
+    const checkNotifications = () => {
+      const userNotifications = JSON.parse(localStorage.getItem("userNotifications") || "[]");
+      const unreadNotifications = userNotifications.filter((notif: any) => !notif.read);
+      setNotifications(unreadNotifications);
+      
+      if (unreadNotifications.length > 0) {
+        setHasNewMessages(true);
+      }
+    };
+
+    checkNotifications();
+    const interval = setInterval(checkNotifications, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Show toast for new notifications
+  useEffect(() => {
+    if (notifications.length > 0) {
+      const latestNotification = notifications[notifications.length - 1];
+      toast({
+        title: "Pesan Baru dari Admin",
+        description: latestNotification.message,
+      });
+    }
+  }, [notifications.length, toast]);
 
   const addToCart = (item: MenuItem) => {
     setCartItems(prev => {
@@ -77,9 +115,30 @@ const Index = () => {
       customerName,
       customerPhone
     };
-    setOrders(prev => [...prev, newOrder]);
+    
+    const updatedOrders = [...orders, newOrder];
+    setOrders(updatedOrders);
+    
+    // Save to localStorage for admin dashboard
+    localStorage.setItem("orders", JSON.stringify(updatedOrders));
+    
     clearCart();
     setActiveTab('orders');
+  };
+
+  const handleChatOpen = () => {
+    setIsChatOpen(true);
+    setHasNewMessages(false);
+    
+    // Mark notifications as read
+    const userNotifications = JSON.parse(localStorage.getItem("userNotifications") || "[]");
+    const updatedNotifications = userNotifications.map((notif: any) => ({ ...notif, read: true }));
+    localStorage.setItem("userNotifications", JSON.stringify(updatedNotifications));
+    setNotifications([]);
+  };
+
+  const handleNewMessage = () => {
+    // This will be called when user sends a message
   };
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -110,6 +169,37 @@ const Index = () => {
           <OrderHistory orders={orders} />
         )}
       </main>
+
+      {/* Chat Button */}
+      <div className="fixed bottom-4 left-4 z-50">
+        <Button
+          onClick={handleChatOpen}
+          className="bg-primary hover:bg-primary/90 text-white shadow-lg rounded-full w-12 h-12 p-0 relative"
+        >
+          <MessageCircle size={20} />
+          {hasNewMessages && (
+            <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full p-0 flex items-center justify-center">
+              !
+            </Badge>
+          )}
+        </Button>
+      </div>
+
+      {/* Notification Badge */}
+      {notifications.length > 0 && (
+        <div className="fixed top-20 right-4 z-50">
+          <div className="bg-red-500 text-white px-3 py-2 rounded-lg shadow-lg flex items-center gap-2">
+            <Bell size={16} />
+            <span className="text-sm">{notifications.length} pesan baru</span>
+          </div>
+        </div>
+      )}
+      
+      <UserChat 
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        onNewMessage={handleNewMessage}
+      />
       
       <Footer />
     </div>

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,8 +9,8 @@ type MenuProps = {
   onAddToCart: (item: MenuItem) => void;
 };
 
+// Makanan (20 items)
 const menuItems: MenuItem[] = [
-  // Makanan (20 items)
   {
     id: 1,
     name: "Nasi Goreng Spesial",
@@ -353,15 +352,15 @@ export const Menu = ({ onAddToCart }: MenuProps) => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white/5 backdrop-blur-sm rounded-3xl my-8 py-12">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4 text-white drop-shadow-lg">Menu Makanan & Minuman</h1>
-        <p className="text-xl text-white/80 drop-shadow">Pilih makanan dan minuman favorit Anda</p>
+        <h1 className="text-4xl font-bold mb-4 text-gray-800">Menu Makanan & Minuman</h1>
+        <p className="text-xl text-gray-600">Pilih makanan dan minuman favorit Anda</p>
       </div>
 
       <Tabs value={activeCategory} onValueChange={(value) => setActiveCategory(value as 'all' | 'food' | 'drink')} className="mb-8">
         <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto bg-white/10 backdrop-blur border border-white/20">
-          <TabsTrigger value="all" className="text-white data-[state=active]:bg-white data-[state=active]:text-primary">Semua</TabsTrigger>
-          <TabsTrigger value="food" className="text-white data-[state=active]:bg-white data-[state=active]:text-primary">Makanan</TabsTrigger>
-          <TabsTrigger value="drink" className="text-white data-[state=active]:bg-white data-[state=active]:text-primary">Minuman</TabsTrigger>
+          <TabsTrigger value="all" className="text-gray-700 data-[state=active]:bg-white data-[state=active]:text-primary">Semua</TabsTrigger>
+          <TabsTrigger value="food" className="text-gray-700 data-[state=active]:bg-white data-[state=active]:text-primary">Makanan</TabsTrigger>
+          <TabsTrigger value="drink" className="text-gray-700 data-[state=active]:bg-white data-[state=active]:text-primary">Minuman</TabsTrigger>
         </TabsList>
       </Tabs>
 
