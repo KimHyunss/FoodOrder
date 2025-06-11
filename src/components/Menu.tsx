@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,8 +9,8 @@ type MenuProps = {
   onAddToCart: (item: MenuItem) => void;
 };
 
-// Makanan (20 items)
-const menuItems: MenuItem[] = [
+// Default menu items (will be loaded only once)
+const defaultMenuItems: MenuItem[] = [
   {
     id: 1,
     name: "Nasi Goreng Spesial",
@@ -336,6 +336,24 @@ const menuItems: MenuItem[] = [
 
 export const Menu = ({ onAddToCart }: MenuProps) => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'food' | 'drink'>('all');
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+
+  useEffect(() => {
+    // Initialize default menu items if not exists
+    const savedDefaultItems = localStorage.getItem("defaultMenuItems");
+    if (!savedDefaultItems) {
+      localStorage.setItem("defaultMenuItems", JSON.stringify(defaultMenuItems));
+    }
+
+    // Load current menu items (either default or admin-modified)
+    const savedMenu = localStorage.getItem("menuItems");
+    if (savedMenu) {
+      setMenuItems(JSON.parse(savedMenu));
+    } else {
+      setMenuItems(defaultMenuItems);
+      localStorage.setItem("menuItems", JSON.stringify(defaultMenuItems));
+    }
+  }, []);
 
   const filteredItems = activeCategory === 'all' 
     ? menuItems 

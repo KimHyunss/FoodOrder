@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Package, MessageCircle, Users, DollarSign } from "lucide-react";
+import { LogOut, Package, MessageCircle, Users, DollarSign, Home, Settings } from "lucide-react";
 import { Order } from "@/pages/Index";
 import { AdminChat } from "@/components/AdminChat";
+import { MenuManagement } from "@/components/MenuManagement";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -25,11 +26,25 @@ const AdminDashboard = () => {
     if (savedOrders) {
       setOrders(JSON.parse(savedOrders));
     }
+
+    // Check for new orders every 2 seconds
+    const interval = setInterval(() => {
+      const currentOrders = localStorage.getItem("orders");
+      if (currentOrders) {
+        setOrders(JSON.parse(currentOrders));
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("adminAuth");
     navigate("/admin/login");
+  };
+
+  const handleGoHome = () => {
+    navigate("/");
   };
 
   const updateOrderStatus = (orderId: number, newStatus: Order['status']) => {
@@ -76,7 +91,18 @@ const AdminDashboard = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-xl font-bold text-gray-800">Dashboard Admin</h1>
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost" 
+                onClick={handleGoHome} 
+                className="text-xl font-bold text-primary hover:text-primary/80 gap-2"
+              >
+                <Home size={20} />
+                FoodOrder
+              </Button>
+              <span className="text-gray-400">|</span>
+              <h1 className="text-xl font-bold text-gray-800">Dashboard Admin</h1>
+            </div>
             <Button variant="outline" onClick={handleLogout} className="gap-2">
               <LogOut size={16} />
               Logout
@@ -105,6 +131,9 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-800">{pendingOrders}</div>
+              {pendingOrders > 0 && (
+                <Badge className="mt-2 bg-red-100 text-red-700">Perlu Perhatian!</Badge>
+              )}
             </CardContent>
           </Card>
 
@@ -121,9 +150,10 @@ const AdminDashboard = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="orders" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-lg">
             <TabsTrigger value="orders">Kelola Pesanan</TabsTrigger>
             <TabsTrigger value="chat">Chat Customer</TabsTrigger>
+            <TabsTrigger value="menu">Kelola Menu</TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders" className="space-y-4">
@@ -207,6 +237,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="chat">
             <AdminChat />
+          </TabsContent>
+
+          <TabsContent value="menu">
+            <MenuManagement />
           </TabsContent>
         </Tabs>
       </div>
