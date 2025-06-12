@@ -75,7 +75,7 @@ const DriverDashboard = () => {
   };
 
   const availableOrders = orders.filter(order => 
-    order.status === 'ready' && !driverOrders.some(do => do.id === order.id)
+    order.status === 'ready' && !driverOrders.some(driverOrder => driverOrder.id === order.id)
   );
 
   const myOrders = driverOrders.filter(order => order.driverId === currentDriver);
