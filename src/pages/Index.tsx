@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Menu } from "@/components/Menu";
 import { Cart } from "@/components/Cart";
@@ -18,6 +19,8 @@ export type MenuItem = {
   price: number;
   category: 'food' | 'drink';
   image: string;
+  rating?: number;
+  reviews?: number;
 };
 
 export type CartItem = {
@@ -48,6 +51,10 @@ const Index = () => {
   const [hasNewMessages, setHasNewMessages] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  // Check if user is logged in for cart/orders access
+  const isUserLoggedIn = localStorage.getItem("userLoggedIn");
 
   // Check URL parameters for tab
   useEffect(() => {
@@ -99,6 +106,16 @@ const Index = () => {
   }, [notifications.length, toast]);
 
   const addToCart = (item: MenuItem) => {
+    if (!isUserLoggedIn) {
+      toast({
+        title: "Login Diperlukan",
+        description: "Anda harus login terlebih dahulu untuk menambahkan item ke keranjang",
+        variant: "destructive"
+      });
+      navigate("/user/login");
+      return;
+    }
+
     setCartItems(prev => {
       const existingItem = prev.find(cartItem => cartItem.id === item.id);
       if (existingItem) {
@@ -129,6 +146,16 @@ const Index = () => {
   };
 
   const placeOrder = (customerName: string, customerPhone: string, customerAddress: string, paymentMethod: string) => {
+    if (!isUserLoggedIn) {
+      toast({
+        title: "Login Diperlukan",
+        description: "Anda harus login terlebih dahulu untuk memesan",
+        variant: "destructive"
+      });
+      navigate("/user/login");
+      return;
+    }
+
     const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const newOrder: Order = {
       id: Date.now(),
@@ -152,6 +179,19 @@ const Index = () => {
     setActiveTab('orders');
   };
 
+  const handleTabChange = (tab: 'menu' | 'cart' | 'orders') => {
+    if ((tab === 'cart' || tab === 'orders') && !isUserLoggedIn) {
+      toast({
+        title: "Login Diperlukan",
+        description: "Anda harus login terlebih dahulu untuk mengakses fitur ini",
+        variant: "destructive"
+      });
+      navigate("/user/login");
+      return;
+    }
+    setActiveTab(tab);
+  };
+
   const handleChatOpen = () => {
     setIsChatOpen(true);
     setHasNewMessages(false);
@@ -173,7 +213,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900">
       <Navigation 
         activeTab={activeTab} 
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         cartItemCount={cartItemCount}
       />
       
@@ -182,7 +222,7 @@ const Index = () => {
           <Menu onAddToCart={addToCart} />
         )}
         
-        {activeTab === 'cart' && (
+        {activeTab === 'cart' && isUserLoggedIn && (
           <Cart 
             items={cartItems}
             onUpdateQuantity={updateCartQuantity}
@@ -191,7 +231,7 @@ const Index = () => {
           />
         )}
         
-        {activeTab === 'orders' && (
+        {activeTab === 'orders' && isUserLoggedIn && (
           <OrderHistory orders={orders} />
         )}
       </main>

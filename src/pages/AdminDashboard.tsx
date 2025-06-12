@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Package, MessageCircle, Users, DollarSign, Home, Settings } from "lucide-react";
+import { LogOut, Package, MessageCircle, Users, DollarSign, Home, Settings, Utensils } from "lucide-react";
 import { Order } from "@/pages/Index";
 import { AdminChat } from "@/components/AdminChat";
 import { MenuManagement } from "@/components/MenuManagement";
@@ -91,22 +90,21 @@ const AdminDashboard = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                onClick={handleGoHome} 
-                className="text-xl font-bold text-primary hover:text-primary/80 gap-2"
-              >
-                <Home size={20} />
+            <div className="flex items-center gap-4 cursor-pointer" onClick={handleGoHome}>
+              <Utensils className="h-8 w-8 text-primary" />
+              <div className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 FoodOrder
-              </Button>
+              </div>
               <span className="text-gray-400">|</span>
               <h1 className="text-xl font-bold text-gray-800">Dashboard Admin</h1>
             </div>
-            <Button variant="outline" onClick={handleLogout} className="gap-2">
-              <LogOut size={16} />
-              Logout
-            </Button>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-600">Admin Panel</span>
+              <Button variant="outline" onClick={handleLogout} className="gap-2">
+                <LogOut size={16} />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>

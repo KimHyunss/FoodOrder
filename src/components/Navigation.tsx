@@ -1,8 +1,14 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, Utensils, Clock, Shield, User, Truck } from "lucide-react";
+import { Menu, X, ShoppingCart, Utensils, Clock, Shield, User, Truck, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type NavigationProps = {
   activeTab: 'menu' | 'cart' | 'orders';
@@ -82,7 +88,7 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
               
               {isUserLoggedIn ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Hi, {currentUser}</span>
+                  <span className="text-sm text-gray-600">User: {currentUser}</span>
                   <Button variant="outline" size="sm" onClick={handleUserLogout}>
                     Logout
                   </Button>
@@ -97,21 +103,25 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
                 </button>
               )}
               
-              <button 
-                onClick={handleDriverPanel}
-                className="hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700"
-              >
-                <Truck size={18} />
-                Driver Panel
-              </button>
-              
-              <button 
-                onClick={handleAdminPanel}
-                className="hover:text-primary transition-colors duration-200 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700"
-              >
-                <Shield size={18} />
-                Admin Panel
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <Shield size={18} />
+                    Panel
+                    <ChevronDown size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white border shadow-lg">
+                  <DropdownMenuItem onClick={handleDriverPanel} className="cursor-pointer">
+                    <Truck size={16} className="mr-2" />
+                    Driver Panel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleAdminPanel} className="cursor-pointer">
+                    <Shield size={16} className="mr-2" />
+                    Admin Panel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
@@ -157,7 +167,7 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
             
             {isUserLoggedIn ? (
               <div className="px-3 py-2">
-                <span className="text-sm text-gray-600 block mb-2">Hi, {currentUser}</span>
+                <span className="text-sm text-gray-600 block mb-2">User: {currentUser}</span>
                 <Button variant="outline" size="sm" onClick={handleUserLogout} className="w-full">
                   Logout
                 </Button>

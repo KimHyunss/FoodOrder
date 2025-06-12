@@ -103,14 +103,14 @@ const DriverDashboard = () => {
       <nav className="bg-white/90 backdrop-blur-md border-b border-white/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+            <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
               <Truck className="h-8 w-8 text-blue-600 mr-2" />
               <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
                 Driver Panel
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-gray-700">Selamat datang, {currentDriver}</span>
+              <span className="text-gray-700">Driver: {currentDriver}</span>
               <Button variant="outline" onClick={() => navigate("/")} className="gap-2">
                 <ArrowLeft size={16} />
                 Home
@@ -127,32 +127,32 @@ const DriverDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Available Orders */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Pesanan Tersedia</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Pesanan Tersedia</h2>
             <div className="space-y-4">
               {availableOrders.map((order) => (
                 <Card key={order.id} className="bg-white/95 backdrop-blur">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">Pesanan #{order.id}</CardTitle>
+                      <CardTitle className="text-lg text-gray-900">Pesanan #{order.id}</CardTitle>
                       <Badge className="bg-green-100 text-green-800">Siap Diambil</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex items-center gap-2">
                       <User size={16} className="text-gray-500" />
-                      <span>{order.customerName}</span>
+                      <span className="text-gray-700">{order.customerName}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone size={16} className="text-gray-500" />
-                      <span>{order.customerPhone}</span>
+                      <span className="text-gray-700">{order.customerPhone}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin size={16} className="text-gray-500" />
-                      <span>{order.customerAddress || 'Alamat belum lengkap'}</span>
+                      <span className="text-gray-700">{order.customerAddress || 'Alamat belum lengkap'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <CreditCard size={16} className="text-gray-500" />
-                      <span>{order.paymentMethod || 'Metode pembayaran belum dipilih'}</span>
+                      <span className="text-gray-700">{order.paymentMethod || 'Metode pembayaran belum dipilih'}</span>
                     </div>
                     <div className="text-lg font-bold text-primary">
                       Total: {formatPrice(order.total)}
@@ -178,13 +178,13 @@ const DriverDashboard = () => {
 
           {/* My Orders */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Pesanan Saya</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Pesanan Saya</h2>
             <div className="space-y-4">
               {myOrders.map((order) => (
                 <Card key={order.id} className="bg-white/95 backdrop-blur">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">Pesanan #{order.id}</CardTitle>
+                      <CardTitle className="text-lg text-gray-900">Pesanan #{order.id}</CardTitle>
                       <Badge variant={order.status === 'delivered' ? 'secondary' : 'default'}>
                         {order.status === 'delivered' ? 'Selesai' : 'Dalam Perjalanan'}
                       </Badge>
@@ -193,15 +193,15 @@ const DriverDashboard = () => {
                   <CardContent className="space-y-3">
                     <div className="flex items-center gap-2">
                       <User size={16} className="text-gray-500" />
-                      <span>{order.customerName}</span>
+                      <span className="text-gray-700">{order.customerName}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone size={16} className="text-gray-500" />
-                      <span>{order.customerPhone}</span>
+                      <span className="text-gray-700">{order.customerPhone}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin size={16} className="text-gray-500" />
-                      <span>{order.customerAddress || 'Alamat belum lengkap'}</span>
+                      <span className="text-gray-700">{order.customerAddress || 'Alamat belum lengkap'}</span>
                     </div>
                     <div className="text-sm text-gray-600">
                       Diambil: {formatTime(order.takenAt)}
