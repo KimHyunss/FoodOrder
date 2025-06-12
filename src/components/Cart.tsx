@@ -3,34 +3,37 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Minus, Plus, Trash2, ShoppingBag, CreditCard } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, CreditCard, MapPin } from "lucide-react";
 import { CartItem } from "@/pages/Index";
 
 type CartProps = {
   items: CartItem[];
   onUpdateQuantity: (id: number, quantity: number) => void;
   onClearCart: () => void;
-  onPlaceOrder: (customerName: string, customerPhone: string) => void;
+  onPlaceOrder: (customerName: string, customerPhone: string, customerAddress: string, paymentMethod: string) => void;
 };
 
 export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: CartProps) => {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
 
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   const handleOrder = () => {
     if (items.length === 0) return;
-    if (!customerName || !customerPhone || !paymentMethod) {
-      alert("Mohon lengkapi semua data termasuk metode pembayaran!");
+    if (!customerName || !customerPhone || !customerAddress || !paymentMethod) {
+      alert("Mohon lengkapi semua data termasuk alamat lengkap dan metode pembayaran!");
       return;
     }
-    onPlaceOrder(customerName, customerPhone);
+    onPlaceOrder(customerName, customerPhone, customerAddress, paymentMethod);
     setCustomerName("");
     setCustomerPhone("");
+    setCustomerAddress("");
     setPaymentMethod("");
   };
 
@@ -115,8 +118,8 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
       {/* Customer Information */}
       <Card className="bg-white/95 backdrop-blur">
         <CardHeader>
-          <CardTitle className="text-gray-800">Informasi Pemesan</CardTitle>
-          <CardDescription className="text-gray-600">Masukkan data untuk pengiriman pesanan</CardDescription>
+          <CardTitle className="text-gray-800">Informasi Pemesan & Pengiriman</CardTitle>
+          <CardDescription className="text-gray-600">Masukkan data lengkap untuk pengiriman pesanan</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -139,6 +142,21 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
               />
             </div>
           </div>
+          
+          <div>
+            <Label className="text-gray-700 flex items-center gap-2">
+              <MapPin size={16} />
+              Alamat Lengkap
+            </Label>
+            <Textarea
+              value={customerAddress}
+              onChange={(e) => setCustomerAddress(e.target.value)}
+              placeholder="Masukkan alamat lengkap termasuk nama jalan, nomor rumah, RT/RW, kelurahan, kecamatan, kota"
+              className="mt-1"
+              rows={3}
+            />
+          </div>
+          
           <div>
             <Label className="text-gray-700">Metode Pembayaran</Label>
             <Select value={paymentMethod} onValueChange={setPaymentMethod}>
@@ -146,17 +164,18 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
                 <SelectValue placeholder="Pilih metode pembayaran" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cash">Bayar Tunai</SelectItem>
+                <SelectItem value="cash">Bayar Tunai (COD)</SelectItem>
                 <SelectItem value="transfer">Transfer Bank</SelectItem>
                 <SelectItem value="ewallet">E-Wallet (OVO/GoPay/DANA)</SelectItem>
                 <SelectItem value="qris">QRIS</SelectItem>
               </SelectContent>
             </Select>
           </div>
+          
           <Button 
             onClick={handleOrder} 
             className="w-full bg-primary hover:bg-primary/90 gap-2 py-3"
-            disabled={!customerName || !customerPhone || !paymentMethod}
+            disabled={!customerName || !customerPhone || !customerAddress || !paymentMethod}
           >
             <CreditCard size={20} />
             Pesan Sekarang - {formatPrice(total)}

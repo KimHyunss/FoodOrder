@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, Utensils, Clock, Shield } from "lucide-react";
+import { Menu, X, ShoppingCart, Utensils, Clock, Shield, User, Truck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 type NavigationProps = {
@@ -13,16 +13,32 @@ type NavigationProps = {
 export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const isUserLoggedIn = localStorage.getItem("userLoggedIn");
+  const currentUser = localStorage.getItem("currentUser");
 
   const handleAdminPanel = () => {
     navigate("/admin/login");
+  };
+
+  const handleUserLogin = () => {
+    navigate("/user/login");
+  };
+
+  const handleDriverPanel = () => {
+    navigate("/driver/login");
+  };
+
+  const handleUserLogout = () => {
+    localStorage.removeItem("userLoggedIn");
+    localStorage.removeItem("currentUser");
+    window.location.reload();
   };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-white/20 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
+          <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
             <Utensils className="h-8 w-8 text-primary mr-2" />
             <div className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               FoodOrder
@@ -63,6 +79,32 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
                 <Clock size={18} />
                 Pesanan
               </button>
+              
+              {isUserLoggedIn ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Hi, {currentUser}</span>
+                  <Button variant="outline" size="sm" onClick={handleUserLogout}>
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <button 
+                  onClick={handleUserLogin}
+                  className="hover:text-primary transition-colors duration-200 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700"
+                >
+                  <User size={18} />
+                  Login User
+                </button>
+              )}
+              
+              <button 
+                onClick={handleDriverPanel}
+                className="hover:text-blue-600 transition-colors duration-200 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700"
+              >
+                <Truck size={18} />
+                Driver Panel
+              </button>
+              
               <button 
                 onClick={handleAdminPanel}
                 className="hover:text-primary transition-colors duration-200 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700"
@@ -112,6 +154,30 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
             >
               Pesanan
             </button>
+            
+            {isUserLoggedIn ? (
+              <div className="px-3 py-2">
+                <span className="text-sm text-gray-600 block mb-2">Hi, {currentUser}</span>
+                <Button variant="outline" size="sm" onClick={handleUserLogout} className="w-full">
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => { handleUserLogin(); setIsOpen(false); }}
+                className="block px-3 py-2 hover:text-primary transition-colors w-full text-left rounded-lg text-gray-700"
+              >
+                Login User
+              </button>
+            )}
+            
+            <button 
+              onClick={() => { handleDriverPanel(); setIsOpen(false); }}
+              className="block px-3 py-2 hover:text-blue-600 transition-colors w-full text-left rounded-lg text-gray-700"
+            >
+              Driver Panel
+            </button>
+            
             <button 
               onClick={() => { handleAdminPanel(); setIsOpen(false); }}
               className="block px-3 py-2 hover:text-primary transition-colors w-full text-left rounded-lg text-gray-700"

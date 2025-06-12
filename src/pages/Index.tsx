@@ -35,6 +35,8 @@ export type Order = {
   orderTime: Date;
   customerName: string;
   customerPhone: string;
+  customerAddress?: string;
+  paymentMethod?: string;
 };
 
 const Index = () => {
@@ -126,7 +128,7 @@ const Index = () => {
     setCartItems([]);
   };
 
-  const placeOrder = (customerName: string, customerPhone: string) => {
+  const placeOrder = (customerName: string, customerPhone: string, customerAddress: string, paymentMethod: string) => {
     const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const newOrder: Order = {
       id: Date.now(),
@@ -135,7 +137,9 @@ const Index = () => {
       status: 'pending',
       orderTime: new Date(),
       customerName,
-      customerPhone
+      customerPhone,
+      customerAddress,
+      paymentMethod
     };
     
     const updatedOrders = [...orders, newOrder];
