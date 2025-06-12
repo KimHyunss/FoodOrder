@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -337,6 +338,7 @@ const defaultMenuItems: MenuItem[] = [
 export const Menu = ({ onAddToCart }: MenuProps) => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'food' | 'drink'>('all');
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Initialize default menu items if not exists
@@ -367,6 +369,10 @@ export const Menu = ({ onAddToCart }: MenuProps) => {
     }).format(price);
   };
 
+  const handleItemClick = (itemId: number) => {
+    navigate(`/menu/${itemId}`);
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white/5 backdrop-blur-sm rounded-3xl my-8 py-12">
       <div className="text-center mb-8">
@@ -386,7 +392,10 @@ export const Menu = ({ onAddToCart }: MenuProps) => {
         {filteredItems.map((item) => (
           <Card key={item.id} className="hover:shadow-xl transition-all duration-300 bg-white/90 backdrop-blur border border-white/20 hover:bg-white/95 hover:scale-105">
             <CardHeader className="p-0">
-              <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
+              <div 
+                className="aspect-video bg-muted rounded-t-lg overflow-hidden cursor-pointer"
+                onClick={() => handleItemClick(item.id)}
+              >
                 <img 
                   src={item.image} 
                   alt={item.name}
@@ -394,7 +403,12 @@ export const Menu = ({ onAddToCart }: MenuProps) => {
                 />
               </div>
               <div className="p-4">
-                <CardTitle className="text-lg text-gray-800">{item.name}</CardTitle>
+                <CardTitle 
+                  className="text-lg text-gray-800 cursor-pointer hover:text-primary transition-colors"
+                  onClick={() => handleItemClick(item.id)}
+                >
+                  {item.name}
+                </CardTitle>
                 <CardDescription className="text-gray-600">{item.description}</CardDescription>
               </div>
             </CardHeader>

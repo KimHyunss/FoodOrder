@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Menu } from "@/components/Menu";
 import { Cart } from "@/components/Cart";
@@ -38,6 +38,7 @@ export type Order = {
 };
 
 const Index = () => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'menu' | 'cart' | 'orders'>('menu');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -45,6 +46,27 @@ const Index = () => {
   const [hasNewMessages, setHasNewMessages] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   const { toast } = useToast();
+
+  // Check URL parameters for tab
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'cart' || tab === 'orders') {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  // Load cart items from localStorage on component mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cartItems");
+    if (savedCart) {
+      setCartItems(JSON.parse(savedCart));
+    }
+  }, []);
+
+  // Save cart items to localStorage whenever cartItems changes
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
 
   // Check for new notifications
   useEffect(() => {
