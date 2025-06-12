@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ShoppingCart, Utensils, Clock } from "lucide-react";
+import { Menu, X, ShoppingCart, Utensils, Clock, Shield } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 type NavigationProps = {
   activeTab: 'menu' | 'cart' | 'orders';
@@ -11,6 +12,11 @@ type NavigationProps = {
 
 export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleAdminPanel = () => {
+    navigate("/admin/login");
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-white/20 shadow-lg">
@@ -57,6 +63,13 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
                 <Clock size={18} />
                 Pesanan
               </button>
+              <button 
+                onClick={handleAdminPanel}
+                className="hover:text-primary transition-colors duration-200 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700"
+              >
+                <Shield size={18} />
+                Admin Panel
+              </button>
             </div>
           </div>
 
@@ -98,6 +111,12 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
               }`}
             >
               Pesanan
+            </button>
+            <button 
+              onClick={() => { handleAdminPanel(); setIsOpen(false); }}
+              className="block px-3 py-2 hover:text-primary transition-colors w-full text-left rounded-lg text-gray-700"
+            >
+              Admin Panel
             </button>
           </div>
         </div>

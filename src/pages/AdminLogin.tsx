@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, User, Lock } from "lucide-react";
+import { Shield, User, Lock, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const AdminLogin = () => {
@@ -37,12 +37,26 @@ const AdminLogin = () => {
     }, 1000);
   };
 
+  const handleBackHome = () => {
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center px-4">
       <Card className="w-full max-w-md bg-white/95 backdrop-blur shadow-xl border border-gray-200">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
-            <Shield className="h-8 w-8 text-primary" />
+          <div className="flex items-center justify-between mb-4">
+            <Button 
+              variant="outline" 
+              onClick={handleBackHome} 
+              className="gap-2"
+            >
+              <Home size={16} />
+              Kembali ke Home
+            </Button>
+            <div className="p-3 bg-primary/10 rounded-full">
+              <Shield className="h-8 w-8 text-primary" />
+            </div>
           </div>
           <CardTitle className="text-2xl font-bold text-gray-800">Admin Login</CardTitle>
           <CardDescription className="text-gray-600">
