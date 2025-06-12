@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Plus, Minus, ShoppingCart, Utensils } from "lucide-react";
+import { ArrowLeft, Plus, Minus, ShoppingCart, Utensils, Star } from "lucide-react";
 import { MenuItem } from "@/pages/Index";
 import { useToast } from "@/hooks/use-toast";
 
@@ -13,6 +13,9 @@ const MenuDetail = () => {
   const { toast } = useToast();
   const [menuItem, setMenuItem] = useState<MenuItem | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {
     const savedMenu = localStorage.getItem("menuItems");
@@ -20,6 +23,12 @@ const MenuDetail = () => {
       const menuItems: MenuItem[] = JSON.parse(savedMenu);
       const item = menuItems.find(item => item.id === Number(id));
       setMenuItem(item || null);
+    }
+
+    // Load reviews for this item
+    const savedReviews = localStorage.getItem(`reviews_${id}`);
+    if (savedReviews) {
+      setReviews(JSON.parse(savedReviews));
     }
   }, [id]);
 
@@ -33,6 +42,18 @@ const MenuDetail = () => {
 
   const handleAddToCart = () => {
     if (!menuItem) return;
+
+    // Check if user is logged in
+    const isUserLoggedIn = localStorage.getItem("userLoggedIn");
+    if (!isUserLoggedIn) {
+      toast({
+        title: "Login diperlukan",
+        description: "Anda harus login terlebih dahulu untuk menambahkan ke keranjang",
+        variant: "destructive"
+      });
+      navigate("/user/login");
+      return;
+    }
 
     // Get existing cart items
     const existingCart = JSON.parse(localStorage.getItem("cartItems") || "[]");
@@ -64,8 +85,55 @@ const MenuDetail = () => {
     navigate("/?tab=cart");
   };
 
+  const handleSubmitReview = () => {
+    const isUserLoggedIn = localStorage.getItem("userLoggedIn");
+    if (!isUserLoggedIn) {
+      toast({
+        title: "Login diperlukan",
+        description: "Anda harus login untuk memberikan rating",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (rating === 0) {
+      toast({
+        title: "Rating diperlukan",
+        description: "Pilih rating bintang terlebih dahulu",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const currentUser = localStorage.getItem("currentUser");
+    const newReview = {
+      user: currentUser,
+      rating,
+      comment,
+      date: new Date()
+    };
+
+    const updatedReviews = [...reviews, newReview];
+    setReviews(updatedReviews);
+    localStorage.setItem(`reviews_${id}`, JSON.stringify(updatedReviews));
+
+    setRating(0);
+    setComment("");
+    
+    toast({
+      title: "Review berhasil ditambahkan!",
+      description: "Terima kasih atas rating dan komentar Anda",
+    });
+  };
+
   const handleBackToMenu = () => {
     navigate("/");
+  };
+
+  const getAverageRating = () => {
+    if (reviews.length === 0) return 0;
+    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+    return (sum / reviews.length).toFixed(1);
   };
 
   if (!menuItem) {
@@ -97,9 +165,11 @@ const MenuDetail = () => {
                 <ArrowLeft size={16} />
                 Kembali
               </Button>
-              <Utensils className="h-8 w-8 text-primary mr-2" />
-              <div className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                FoodOrder
+              <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
+                <Utensils className="h-8 w-8 text-primary mr-2" />
+                <div className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  FoodOrder
+                </div>
               </div>
             </div>
           </div>
@@ -107,7 +177,7 @@ const MenuDetail = () => {
       </nav>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <Card className="bg-white/95 backdrop-blur shadow-xl border border-white/20">
           <div className="grid md:grid-cols-2 gap-8">
             {/* Image */}
@@ -130,6 +200,13 @@ const MenuDetail = () => {
                   }`}>
                     {menuItem.category === 'food' ? 'Makanan' : 'Minuman'}
                   </span>
+                  {reviews.length > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-medium">{getAverageRating()}</span>
+                      <span className="text-sm text-gray-500">({reviews.length} review)</span>
+                    </div>
+                  )}
                 </div>
                 <CardTitle className="text-3xl text-gray-800 mb-2">{menuItem.name}</CardTitle>
                 <CardDescription className="text-lg text-gray-600 mb-4">
@@ -175,15 +252,78 @@ const MenuDetail = () => {
                 {/* Add to Cart Button */}
                 <Button 
                   onClick={handleAddToCart}
-                  className="w-full gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg text-lg py-6"
+                  className="w-full gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg text-lg py-6 mb-6"
                 >
                   <ShoppingCart size={20} />
                   Tambah ke Keranjang
                 </Button>
+
+                {/* Rating Section */}
+                <div className="border-t pt-6 space-y-4">
+                  <h3 className="text-lg font-semibold">Berikan Rating & Komentar</h3>
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setRating(star)}
+                        className="hover:scale-110 transition-transform"
+                      >
+                        <Star 
+                          className={`w-8 h-8 ${
+                            star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Tulis komentar Anda (opsional)"
+                    className="w-full p-3 border rounded-lg resize-none h-20"
+                  />
+                  <Button onClick={handleSubmitReview} className="w-full">
+                    Kirim Review
+                  </Button>
+                </div>
               </CardContent>
             </div>
           </div>
         </Card>
+
+        {/* Reviews Section */}
+        {reviews.length > 0 && (
+          <Card className="bg-white/95 backdrop-blur shadow-xl border border-white/20">
+            <CardHeader>
+              <CardTitle>Review dari Pelanggan</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {reviews.map((review, index) => (
+                <div key={index} className="border-b pb-4 last:border-b-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-medium">{review.user}</span>
+                    <div className="flex items-center">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${
+                            star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {review.comment && (
+                    <p className="text-gray-600">{review.comment}</p>
+                  )}
+                  <p className="text-sm text-gray-400 mt-1">
+                    {new Date(review.date).toLocaleDateString('id-ID')}
+                  </p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

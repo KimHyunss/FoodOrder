@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Truck, ArrowLeft, MapPin, Phone, User, CreditCard, CheckCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Truck, ArrowLeft, MapPin, Phone, User, CreditCard, CheckCircle, Wallet, DollarSign } from "lucide-react";
 import { Order } from "@/pages/Index";
 
 const DriverDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [driverOrders, setDriverOrders] = useState<any[]>([]);
+  const [earnings, setEarnings] = useState(0);
   const navigate = useNavigate();
   const currentDriver = localStorage.getItem("currentDriver");
 
@@ -31,7 +33,13 @@ const DriverDashboard = () => {
     if (savedDriverOrders) {
       setDriverOrders(JSON.parse(savedDriverOrders));
     }
-  }, [navigate]);
+
+    // Load driver earnings
+    const savedEarnings = localStorage.getItem(`earnings_${currentDriver}`);
+    if (savedEarnings) {
+      setEarnings(Number(savedEarnings));
+    }
+  }, [navigate, currentDriver]);
 
   const takeOrder = (order: Order) => {
     const driverOrder = {
@@ -45,7 +53,7 @@ const DriverDashboard = () => {
     setDriverOrders(updatedDriverOrders);
     localStorage.setItem("driverOrders", JSON.stringify(updatedDriverOrders));
 
-    // Update order status
+    // Update order status to 'preparing' (Dalam Perjalanan)
     const updatedOrders = orders.map(o => 
       o.id === order.id ? { ...o, status: 'preparing' as const } : o
     );
@@ -54,6 +62,15 @@ const DriverDashboard = () => {
   };
 
   const completeDelivery = (orderId: number) => {
+    const order = driverOrders.find(o => o.id === orderId);
+    if (order) {
+      // Calculate earnings (10% of order total)
+      const commission = order.total * 0.1;
+      const newEarnings = earnings + commission;
+      setEarnings(newEarnings);
+      localStorage.setItem(`earnings_${currentDriver}`, newEarnings.toString());
+    }
+
     const updatedDriverOrders = driverOrders.map(order =>
       order.id === orderId ? { ...order, status: 'delivered' } : order
     );
@@ -66,6 +83,17 @@ const DriverDashboard = () => {
     );
     setOrders(updatedOrders);
     localStorage.setItem("orders", JSON.stringify(updatedOrders));
+  };
+
+  const withdrawEarnings = () => {
+    if (earnings === 0) return;
+    
+    // Here you would implement withdrawal logic
+    alert(`Penarikan ${formatPrice(earnings)} berhasil! Dana akan ditransfer ke rekening Anda.`);
+    
+    // Reset earnings
+    setEarnings(0);
+    localStorage.setItem(`earnings_${currentDriver}`, "0");
   };
 
   const handleLogout = () => {
@@ -124,9 +152,14 @@ const DriverDashboard = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Available Orders */}
-          <div>
+        <Tabs defaultValue="orders" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 max-w-lg bg-white/90">
+            <TabsTrigger value="orders">Pesanan</TabsTrigger>
+            <TabsTrigger value="myorders">Pesanan Saya</TabsTrigger>
+            <TabsTrigger value="wallet">Wallet</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="orders" className="space-y-4">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Pesanan Tersedia</h2>
             <div className="space-y-4">
               {availableOrders.map((order) => (
@@ -157,6 +190,9 @@ const DriverDashboard = () => {
                     <div className="text-lg font-bold text-primary">
                       Total: {formatPrice(order.total)}
                     </div>
+                    <div className="text-sm text-green-600 font-medium">
+                      Komisi: {formatPrice(order.total * 0.1)} (10%)
+                    </div>
                     <Button 
                       onClick={() => takeOrder(order)} 
                       className="w-full bg-blue-600 hover:bg-blue-700"
@@ -174,10 +210,9 @@ const DriverDashboard = () => {
                 </Card>
               )}
             </div>
-          </div>
+          </TabsContent>
 
-          {/* My Orders */}
-          <div>
+          <TabsContent value="myorders" className="space-y-4">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Pesanan Saya</h2>
             <div className="space-y-4">
               {myOrders.map((order) => (
@@ -229,8 +264,63 @@ const DriverDashboard = () => {
                 </Card>
               )}
             </div>
-          </div>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="wallet" className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Wallet Driver</h2>
+            <Card className="bg-white/95 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Wallet size={20} />
+                  Saldo Anda
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-green-600 mb-2">
+                    {formatPrice(earnings)}
+                  </div>
+                  <p className="text-gray-600">Total pendapatan dari pengiriman</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <DollarSign size={16} className="text-blue-600" />
+                      <span className="font-medium">Komisi per Pengiriman</span>
+                    </div>
+                    <p className="text-sm text-gray-600">10% dari total pesanan</p>
+                  </div>
+                  
+                  <div className="p-4 bg-green-50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle size={16} className="text-green-600" />
+                      <span className="font-medium">Pengiriman Selesai</span>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {myOrders.filter(order => order.status === 'delivered').length} pesanan
+                    </p>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={withdrawEarnings}
+                  disabled={earnings === 0}
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                >
+                  <Wallet size={16} className="mr-2" />
+                  Tarik Saldo
+                </Button>
+
+                {earnings === 0 && (
+                  <p className="text-center text-gray-500 text-sm">
+                    Selesaikan pengiriman untuk mendapat komisi
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

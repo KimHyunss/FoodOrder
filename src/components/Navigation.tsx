@@ -21,6 +21,9 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
   const navigate = useNavigate();
   const isUserLoggedIn = localStorage.getItem("userLoggedIn");
   const currentUser = localStorage.getItem("currentUser");
+  const isDriverLoggedIn = localStorage.getItem("driverLoggedIn");
+  const currentDriver = localStorage.getItem("currentDriver");
+  const isAdminLoggedIn = localStorage.getItem("adminAuth");
 
   const handleAdminPanel = () => {
     navigate("/admin/login");
@@ -37,7 +40,15 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
   const handleUserLogout = () => {
     localStorage.removeItem("userLoggedIn");
     localStorage.removeItem("currentUser");
+    localStorage.removeItem("currentUserData");
     window.location.reload();
+  };
+
+  const getCurrentUserDisplay = () => {
+    if (isAdminLoggedIn) return "Admin";
+    if (isDriverLoggedIn) return `Driver: ${currentDriver}`;
+    if (isUserLoggedIn) return `User: ${currentUser}`;
+    return null;
   };
 
   return (
@@ -86,13 +97,17 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
                 Pesanan
               </button>
               
-              {isUserLoggedIn ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">User: {currentUser}</span>
-                  <Button variant="outline" size="sm" onClick={handleUserLogout}>
-                    Logout
-                  </Button>
+              {/* Current User Display */}
+              {getCurrentUserDisplay() && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-primary/10 rounded-lg">
+                  <span className="text-sm font-medium text-primary">{getCurrentUserDisplay()}</span>
                 </div>
+              )}
+              
+              {isUserLoggedIn ? (
+                <Button variant="outline" size="sm" onClick={handleUserLogout}>
+                  Logout
+                </Button>
               ) : (
                 <button 
                   onClick={handleUserLogin}
@@ -105,18 +120,18 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="gap-2">
+                  <Button variant="outline" className="gap-2 bg-white hover:bg-gray-50 border-2 border-primary/20 hover:border-primary/40">
                     <Shield size={18} />
                     Panel
                     <ChevronDown size={16} />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white border shadow-lg">
-                  <DropdownMenuItem onClick={handleDriverPanel} className="cursor-pointer">
+                <DropdownMenuContent className="bg-white border-2 border-gray-200 shadow-xl z-50">
+                  <DropdownMenuItem onClick={handleDriverPanel} className="cursor-pointer hover:bg-blue-50 focus:bg-blue-50">
                     <Truck size={16} className="mr-2" />
                     Driver Panel
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleAdminPanel} className="cursor-pointer">
+                  <DropdownMenuItem onClick={handleAdminPanel} className="cursor-pointer hover:bg-green-50 focus:bg-green-50">
                     <Shield size={16} className="mr-2" />
                     Admin Panel
                   </DropdownMenuItem>
@@ -165,9 +180,14 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
               Pesanan
             </button>
             
+            {getCurrentUserDisplay() && (
+              <div className="px-3 py-2">
+                <span className="text-sm text-gray-600">{getCurrentUserDisplay()}</span>
+              </div>
+            )}
+            
             {isUserLoggedIn ? (
               <div className="px-3 py-2">
-                <span className="text-sm text-gray-600 block mb-2">User: {currentUser}</span>
                 <Button variant="outline" size="sm" onClick={handleUserLogout} className="w-full">
                   Logout
                 </Button>
