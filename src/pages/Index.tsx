@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
@@ -67,7 +68,7 @@ const Index = () => {
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab === 'cart' || tab === 'orders') {
-      setActiveTab(tab);
+      setActiveTab(tab as 'cart' | 'orders');
     }
   }, [searchParams]);
 
