@@ -1,25 +1,36 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CreditCard, ArrowLeft, User, MapPin, Trash2, Edit, Plus, ShoppingCart } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CreditCard, ArrowLeft, User, MapPin, Trash2, Edit, Plus, ShoppingCart, Search, Upload } from "lucide-react";
 import { MenuItem, CartItem } from "@/pages/Index";
 import { useToast } from "@/hooks/use-toast";
 
 const CashierDashboard = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState<'all' | 'food' | 'drink'>('all');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
-  const [newItem, setNewItem] = useState({ name: "", description: "", price: 0, category: "food" as "food" | "drink", image: "" });
+  const [newItem, setNewItem] = useState({ 
+    name: "", 
+    description: "", 
+    price: 0, 
+    category: "food" as "food" | "drink", 
+    image: "",
+    imageFile: null as File | null
+  });
   const [language, setLanguage] = useState("id");
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -55,6 +66,20 @@ const CashierDashboard = () => {
       localStorage.setItem("menuItems", JSON.stringify(defaultMenuItems));
     }
   }, [navigate]);
+
+  useEffect(() => {
+    // Filter menu items based on search and category
+    let filtered = menuItems.filter(item => 
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (activeCategory !== 'all') {
+      filtered = filtered.filter(item => item.category === activeCategory);
+    }
+
+    setFilteredMenuItems(filtered);
+  }, [menuItems, searchTerm, activeCategory]);
 
   const getLanguageText = () => {
     if (language === "en") {
@@ -171,6 +196,17 @@ const CashierDashboard = () => {
     }
   };
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setNewItem({...newItem, image: e.target?.result as string, imageFile: file});
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const saveMenuItem = () => {
     if (editingItem) {
       const updatedItems = menuItems.map(item =>
@@ -183,14 +219,14 @@ const CashierDashboard = () => {
       const newMenuItem: MenuItem = {
         ...newItem,
         id: Date.now(),
-        image: "/placeholder.svg",
+        image: newItem.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
         rating: 0,
         reviews: 0
       };
       const updatedItems = [...menuItems, newMenuItem];
       setMenuItems(updatedItems);
       localStorage.setItem("menuItems", JSON.stringify(updatedItems));
-      setNewItem({ name: "", description: "", price: 0, category: "food", image: "" });
+      setNewItem({ name: "", description: "", price: 0, category: "food", image: "", imageFile: null });
     }
   };
 
@@ -318,7 +354,7 @@ const CashierDashboard = () => {
                   </div>
                   <div>
                     <Label className="dark:text-gray-300">{text.description}</Label>
-                    <Input
+                    <Textarea
                       value={newItem.description}
                       onChange={(e) => setNewItem({...newItem, description: e.target.value})}
                       placeholder={text.description}
@@ -337,6 +373,30 @@ const CashierDashboard = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div>
+                    <Label className="dark:text-gray-300">Foto Menu</Label>
+                    <div className="space-y-2">
+                      <Input
+                        value={newItem.image}
+                        onChange={(e) => setNewItem({...newItem, image: e.target.value})}
+                        placeholder="URL Gambar"
+                        className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                      />
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">atau</span>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <Upload size={16} />
+                          <span className="text-sm">Upload File</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                   <Button onClick={saveMenuItem} className="w-full">
                     <Plus size={16} className="mr-2" />
                     {text.addMenu}
@@ -344,10 +404,41 @@ const CashierDashboard = () => {
                 </CardContent>
               </Card>
 
+              {/* Search and Filter */}
+              <Card className="mb-6 dark:bg-gray-800">
+                <CardContent className="p-4">
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                      <Input
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Cari menu..."
+                        className="pl-10 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                      />
+                    </div>
+                    <Tabs value={activeCategory} onValueChange={(value) => setActiveCategory(value as 'all' | 'food' | 'drink')}>
+                      <TabsList className="grid w-full grid-cols-3 dark:bg-gray-700">
+                        <TabsTrigger value="all" className="dark:text-gray-300">Semua Menu</TabsTrigger>
+                        <TabsTrigger value="food" className="dark:text-gray-300">Makanan</TabsTrigger>
+                        <TabsTrigger value="drink" className="dark:text-gray-300">Minuman</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Menu List */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {menuItems.map((item) => (
+                {filteredMenuItems.map((item) => (
                   <Card key={item.id} className="relative dark:bg-gray-800">
+                    <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
+                      <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="font-semibold dark:text-gray-200">{item.name}</h3>

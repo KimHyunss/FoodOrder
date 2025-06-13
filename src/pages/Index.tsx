@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
@@ -7,9 +6,11 @@ import { Cart } from "@/components/Cart";
 import { OrderHistory } from "@/components/OrderHistory";
 import { Footer } from "@/components/Footer";
 import { UserChat } from "@/components/UserChat";
+import { HeroSection } from "@/components/HeroSection";
+import { MenuSelection } from "@/components/MenuSelection";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Bell, ArrowRight } from "lucide-react";
+import { MessageCircle, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export type MenuItem = {
@@ -250,6 +251,11 @@ const Index = () => {
     // This will be called when user sends a message
   };
 
+  const handleMenuSelection = (category: 'all' | 'food' | 'drink') => {
+    setMenuFilter(category);
+    setActiveTab('menu');
+  };
+
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -260,65 +266,11 @@ const Index = () => {
         cartItemCount={cartItemCount}
       />
       
-      <main className="pt-20 pb-8">
+      <main className="pt-20">
         {activeTab === 'home' && (
-          <div className="space-y-16">
-            {/* Hero/Promotion Section */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-              <div className="text-center space-y-8">
-                <div className="relative inline-block">
-                  <img 
-                    src="/placeholder.svg" 
-                    alt="Delicious Food" 
-                    className="w-96 h-64 object-cover rounded-2xl shadow-2xl mx-auto"
-                  />
-                  <div className="absolute inset-0 bg-black/30 rounded-2xl flex items-center justify-center">
-                    <div className="text-white text-center space-y-4">
-                      <h1 className="text-4xl font-bold">FoodOrder</h1>
-                      <p className="text-xl">{language === "en" ? "Delicious food delivered to your door" : "Makanan lezat diantar ke pintu Anda"}</p>
-                    </div>
-                  </div>
-                </div>
-                <Button 
-                  onClick={() => setActiveTab('menu')} 
-                  className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg rounded-xl shadow-lg"
-                >
-                  {text.orderNow}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
-            </section>
-
-            {/* Menu Selection Section */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center space-y-8">
-                <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{text.chooseFavorite}</h2>
-                
-                <div className="flex justify-center space-x-4">
-                  <Button
-                    onClick={() => setActiveTab('menu')}
-                    variant={menuFilter === 'all' ? 'default' : 'outline'}
-                    className="px-6 py-3 rounded-lg"
-                  >
-                    {text.allMenu}
-                  </Button>
-                  <Button
-                    onClick={() => { setActiveTab('menu'); setMenuFilter('food'); }}
-                    variant={menuFilter === 'food' ? 'default' : 'outline'}
-                    className="px-6 py-3 rounded-lg"
-                  >
-                    {text.food}
-                  </Button>
-                  <Button
-                    onClick={() => { setActiveTab('menu'); setMenuFilter('drink'); }}
-                    variant={menuFilter === 'drink' ? 'default' : 'outline'}
-                    className="px-6 py-3 rounded-lg"
-                  >
-                    {text.drinks}
-                  </Button>
-                </div>
-              </div>
-            </section>
+          <div className="space-y-0">
+            <HeroSection onOrderNow={() => setActiveTab('menu')} language={language} />
+            <MenuSelection onMenuSelect={handleMenuSelection} language={language} />
           </div>
         )}
         

@@ -11,7 +11,7 @@ import { ArrowLeft, Shield, User, Phone, MapPin, CreditCard, Edit, Trash2, Messa
 import { useToast } from "@/hooks/use-toast";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'accounts' | 'comments' | 'footer'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'accounts' | 'comments' | 'footer' | 'settings'>('orders');
   const [orders, setOrders] = useState<any[]>([]);
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -27,6 +27,9 @@ const AdminDashboard = () => {
       weekdays: "08:00 - 22:00",
       weekend: "10:00 - 23:00"
     }
+  });
+  const [appSettings, setAppSettings] = useState({
+    logoName: "FoodOrder"
   });
   const [language, setLanguage] = useState("id");
   const navigate = useNavigate();
@@ -105,7 +108,12 @@ const AdminDashboard = () => {
         weekendHours: "Weekend Hours (Sat-Sun)",
         saveFooterInfo: "Save Footer Information",
         footerInfoSaved: "Footer Information Saved!",
-        footerInfoUpdated: "Footer information has been updated successfully."
+        footerInfoUpdated: "Footer information has been updated successfully.",
+        appSettings: "App Settings",
+        logoName: "Logo Name",
+        saveSettings: "Save Settings",
+        settingsSaved: "Settings Saved!",
+        settingsUpdated: "App settings have been updated successfully."
       };
     }
     return {
@@ -163,7 +171,12 @@ const AdminDashboard = () => {
       weekendHours: "Jam Weekend (Sab-Min)",
       saveFooterInfo: "Simpan Info Footer",
       footerInfoSaved: "Info Footer Tersimpan!",
-      footerInfoUpdated: "Informasi footer berhasil diperbarui."
+      footerInfoUpdated: "Informasi footer berhasil diperbarui.",
+      appSettings: "Pengaturan Aplikasi",
+      logoName: "Nama Logo",
+      saveSettings: "Simpan Pengaturan",
+      settingsSaved: "Pengaturan Tersimpan!",
+      settingsUpdated: "Pengaturan aplikasi berhasil diperbarui."
     };
   };
 
@@ -202,9 +215,36 @@ const AdminDashboard = () => {
     if (savedFooterInfo) {
       setFooterInfo(JSON.parse(savedFooterInfo));
     }
+
+    const savedAppSettings = localStorage.getItem("appSettings");
+    if (savedAppSettings) {
+      setAppSettings(JSON.parse(savedAppSettings));
+    }
+
+    // Load default accounts if none exist
+    const defaultAccounts = [
+      { id: 1, username: "admin", password: "admin123", email: "admin@foodorder.com", phone: "+62 812-3456-7890", role: "admin" },
+      { id: 2, username: "driver1", password: "driver123", email: "driver@foodorder.com", phone: "+62 813-4567-8901", role: "driver" },
+      { id: 3, username: "kasir1", password: "kasir123", email: "kasir@foodorder.com", phone: "+62 814-5678-9012", role: "cashier" }
+    ];
+
+    if (accounts.length === 0) {
+      setAccounts(defaultAccounts);
+      localStorage.setItem("accounts", JSON.stringify(defaultAccounts));
+    }
   };
 
   const saveOrderStatus = (orderId: number, status: string) => {
+    // Only allow admin to change status up to 'ready'
+    if (status === 'delivered') {
+      toast({
+        title: "Akses Ditolak",
+        description: "Status 'delivered' hanya dapat diubah oleh driver",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const updatedOrders = orders.map(order => 
       order.id === orderId ? { ...order, status } : order
     );
@@ -270,6 +310,14 @@ const AdminDashboard = () => {
     });
   };
 
+  const saveAppSettings = () => {
+    localStorage.setItem("appSettings", JSON.stringify(appSettings));
+    toast({
+      title: text.settingsSaved,
+      description: text.settingsUpdated,
+    });
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("adminAuth");
     navigate("/");
@@ -303,12 +351,13 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 max-w-2xl bg-white/90 dark:bg-gray-800/90">
+          <TabsList className="grid w-full grid-cols-6 max-w-3xl bg-white/90 dark:bg-gray-800/90">
             <TabsTrigger value="orders" className="dark:text-gray-300">{text.manageOrders}</TabsTrigger>
             <TabsTrigger value="menu" className="dark:text-gray-300">{text.manageMenu}</TabsTrigger>
             <TabsTrigger value="accounts" className="dark:text-gray-300">{text.manageAccounts}</TabsTrigger>
             <TabsTrigger value="comments" className="dark:text-gray-300">{text.allComments}</TabsTrigger>
             <TabsTrigger value="footer" className="dark:text-gray-300">{text.footerInformation}</TabsTrigger>
+            <TabsTrigger value="settings" className="dark:text-gray-300">{text.appSettings}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders" className="space-y-4">
@@ -324,7 +373,7 @@ const AdminDashboard = () => {
                       <Badge variant={
                         order.status === 'pending' ? 'destructive' :
                         order.status === 'preparing' ? 'default' :
-                        order.status === 'ready' ? 'default' : 'secondary'
+                        order.status === 'ready' ? 'secondary' : 'default'
                       }>
                         {order.status === 'pending' ? text.pending :
                          order.status === 'preparing' ? text.preparing :
@@ -521,6 +570,25 @@ const AdminDashboard = () => {
 
                 <Button onClick={saveFooterInfo} className="w-full">
                   {text.saveFooterInfo}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{text.appSettings}</h2>
+            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur">
+              <CardContent className="p-6 space-y-4">
+                <div>
+                  <Label className="dark:text-gray-300">{text.logoName}</Label>
+                  <Input
+                    value={appSettings.logoName}
+                    onChange={(e) => setAppSettings({...appSettings, logoName: e.target.value})}
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                  />
+                </div>
+                <Button onClick={saveAppSettings} className="w-full">
+                  {text.saveSettings}
                 </Button>
               </CardContent>
             </Card>

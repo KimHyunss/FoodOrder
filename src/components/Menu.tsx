@@ -338,7 +338,38 @@ const defaultMenuItems: MenuItem[] = [
 export const Menu = ({ onAddToCart }: MenuProps) => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'food' | 'drink'>('all');
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [language, setLanguage] = useState("id");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language");
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
+  const getLanguageText = () => {
+    if (language === "en") {
+      return {
+        menuTitle: "Food & Drinks Menu",
+        menuSubtitle: "Choose your favorite food and drinks",
+        all: "All",
+        food: "Food", 
+        drinks: "Drinks",
+        add: "Add"
+      };
+    }
+    return {
+      menuTitle: "Menu Makanan & Minuman",
+      menuSubtitle: "Pilih makanan dan minuman favorit Anda",
+      all: "Semua",
+      food: "Makanan",
+      drinks: "Minuman", 
+      add: "Tambah"
+    };
+  };
+
+  const text = getLanguageText();
 
   useEffect(() => {
     // Initialize default menu items if not exists
@@ -374,23 +405,23 @@ export const Menu = ({ onAddToCart }: MenuProps) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white/5 backdrop-blur-sm rounded-3xl my-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white/5 dark:bg-gray-800/10 backdrop-blur-sm rounded-3xl my-8 py-12">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4 text-gray-800">Menu Makanan & Minuman</h1>
-        <p className="text-xl text-gray-600">Pilih makanan dan minuman favorit Anda</p>
+        <h1 className="text-4xl font-bold mb-4 text-gray-800 dark:text-gray-100">{text.menuTitle}</h1>
+        <p className="text-xl text-gray-600 dark:text-gray-300">{text.menuSubtitle}</p>
       </div>
 
       <Tabs value={activeCategory} onValueChange={(value) => setActiveCategory(value as 'all' | 'food' | 'drink')} className="mb-8">
-        <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto bg-white/10 backdrop-blur border border-white/20">
-          <TabsTrigger value="all" className="text-gray-700 data-[state=active]:bg-white data-[state=active]:text-primary">Semua</TabsTrigger>
-          <TabsTrigger value="food" className="text-gray-700 data-[state=active]:bg-white data-[state=active]:text-primary">Makanan</TabsTrigger>
-          <TabsTrigger value="drink" className="text-gray-700 data-[state=active]:bg-white data-[state=active]:text-primary">Minuman</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto bg-white/10 dark:bg-gray-700/50 backdrop-blur border border-white/20 dark:border-gray-600/20">
+          <TabsTrigger value="all" className="text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600 data-[state=active]:text-primary dark:data-[state=active]:text-white">{text.all}</TabsTrigger>
+          <TabsTrigger value="food" className="text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600 data-[state=active]:text-primary dark:data-[state=active]:text-white">{text.food}</TabsTrigger>
+          <TabsTrigger value="drink" className="text-gray-700 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-600 data-[state=active]:text-primary dark:data-[state=active]:text-white">{text.drinks}</TabsTrigger>
         </TabsList>
       </Tabs>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredItems.map((item) => (
-          <Card key={item.id} className="hover:shadow-xl transition-all duration-300 bg-white/90 backdrop-blur border border-white/20 hover:bg-white/95 hover:scale-105">
+          <Card key={item.id} className="hover:shadow-xl transition-all duration-300 bg-white/90 dark:bg-gray-800/90 backdrop-blur border border-white/20 dark:border-gray-700/20 hover:bg-white/95 dark:hover:bg-gray-800/95 hover:scale-105">
             <CardHeader className="p-0">
               <div 
                 className="aspect-video bg-muted rounded-t-lg overflow-hidden cursor-pointer"
@@ -404,22 +435,22 @@ export const Menu = ({ onAddToCart }: MenuProps) => {
               </div>
               <div className="p-4">
                 <CardTitle 
-                  className="text-lg text-gray-800 cursor-pointer hover:text-primary transition-colors"
+                  className="text-lg text-gray-800 dark:text-gray-100 cursor-pointer hover:text-primary dark:hover:text-primary transition-colors"
                   onClick={() => handleItemClick(item.id)}
                 >
                   {item.name}
                 </CardTitle>
-                <CardDescription className="text-gray-600">{item.description}</CardDescription>
+                <CardDescription className="text-gray-600 dark:text-gray-400">{item.description}</CardDescription>
               </div>
             </CardHeader>
             <CardContent className="pt-0 px-4 pb-4">
               <div className="flex items-center justify-between">
-                <span className="text-xl font-bold text-primary">
+                <span className="text-xl font-bold text-primary dark:text-primary-foreground">
                   {formatPrice(item.price)}
                 </span>
                 <Button onClick={() => onAddToCart(item)} className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg">
                   <Plus size={16} />
-                  Tambah
+                  {text.add}
                 </Button>
               </div>
             </CardContent>
