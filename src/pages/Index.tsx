@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
@@ -65,7 +64,6 @@ const Index = () => {
     }
   }, []);
 
-  // Check URL parameters for tab
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab === 'cart' || tab === 'orders') {
@@ -324,7 +322,7 @@ const Index = () => {
         )}
         
         {activeTab === 'menu' && (
-          <Menu onAddToCart={addToCart} filter={menuFilter} />
+          <Menu onAddToCart={addToCart} />
         )}
         
         {activeTab === 'cart' && isUserLoggedIn && (

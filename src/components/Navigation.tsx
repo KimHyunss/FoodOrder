@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ShoppingCart, Utensils, Clock, Shield, User, Truck, ChevronDown, Settings, Languages, Moon, Sun, LogOut, UserPlus, Trash2, RotateCcw, CreditCard } from "lucide-react";
@@ -15,8 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 type NavigationProps = {
-  activeTab: 'menu' | 'cart' | 'orders';
-  setActiveTab: (tab: 'menu' | 'cart' | 'orders') => void;
+  activeTab: 'home' | 'menu' | 'cart' | 'orders';
+  setActiveTab: (tab: 'home' | 'menu' | 'cart' | 'orders') => void;
   cartItemCount: number;
 };
 

@@ -323,8 +323,8 @@ const AdminDashboard = () => {
                       <CardTitle className="text-lg text-gray-900 dark:text-gray-100">{text.orderNumber} {order.id}</CardTitle>
                       <Badge variant={
                         order.status === 'pending' ? 'destructive' :
-                        order.status === 'preparing' ? 'warning' :
-                        order.status === 'ready' ? 'success' : 'secondary'
+                        order.status === 'preparing' ? 'default' :
+                        order.status === 'ready' ? 'default' : 'secondary'
                       }>
                         {order.status === 'pending' ? text.pending :
                          order.status === 'preparing' ? text.preparing :
