@@ -17,7 +17,7 @@ const CashierLogin = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (username === "Cashier" && password === "Cashier123") {
+    if (username === "Kasir" && password === "kasir123") {
       localStorage.setItem("cashierLoggedIn", "true");
       localStorage.setItem("currentCashier", username);
       
@@ -37,8 +37,8 @@ const CashierLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white/95 backdrop-blur shadow-xl border border-white/20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-white/95 dark:bg-gray-800/95 backdrop-blur shadow-xl border border-white/20 dark:border-gray-700/20">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4 cursor-pointer" onClick={() => navigate("/")}>
             <Utensils className="h-8 w-8 text-primary mr-2" />
@@ -46,32 +46,34 @@ const CashierLogin = () => {
               FoodOrder
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-800">Login Kasir</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">Login Kasir</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-300">
             Masuk untuk mengelola pesanan di resto
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-gray-700 dark:text-gray-200">Username</Label>
               <Input
                 id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Masukkan username"
+                className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-gray-700 dark:text-gray-200">Password</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Masukkan password"
+                className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                 required
               />
             </div>
@@ -80,7 +82,7 @@ const CashierLogin = () => {
             </Button>
             
             <div className="text-center">
-              <Button variant="outline" onClick={() => navigate("/")} className="w-full gap-2">
+              <Button variant="outline" onClick={() => navigate("/")} className="w-full gap-2 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
                 <ArrowLeft size={16} />
                 Kembali ke Home
               </Button>
