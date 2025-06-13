@@ -14,6 +14,7 @@ import DriverLogin from "./pages/DriverLogin";
 import DriverDashboard from "./pages/DriverDashboard";
 import CashierLogin from "./pages/CashierLogin";
 import CashierDashboard from "./pages/CashierDashboard";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/driver/dashboard" element={<DriverDashboard />} />
           <Route path="/cashier/login" element={<CashierLogin />} />
           <Route path="/cashier/dashboard" element={<CashierDashboard />} />
+          <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

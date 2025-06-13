@@ -44,6 +44,104 @@ const AdminDashboard = () => {
   const { toast } = useToast();
   const [allComments, setAllComments] = useState<any[]>([]);
   const [wallpaper, setWallpaper] = useState("");
+  const language = localStorage.getItem("language") || "id";
+
+  const getText = () => {
+    if (language === "en") {
+      return {
+        adminPanel: "Admin Panel",
+        welcome: "Welcome, Admin",
+        home: "Home",
+        logout: "Logout",
+        manageOrders: "Manage Orders",
+        manageMenu: "Manage Menu",
+        manageAccounts: "Manage Accounts",
+        settings: "Settings",
+        allComments: "All Comments",
+        noComments: "No comments yet",
+        menuId: "Menu ID",
+        addMenu: "Add Menu",
+        menuName: "Menu Name",
+        price: "Price",
+        description: "Description",
+        category: "Category",
+        food: "Food",
+        drink: "Drink",
+        save: "Save",
+        username: "Username",
+        email: "Email",
+        phone: "Phone",
+        role: "Role",
+        addAccount: "Add Account",
+        changeWallpaper: "Change Wallpaper/Background",
+        uploadImage: "Upload image to change all pages background",
+        wallpaperPreview: "Wallpaper Preview",
+        wallpaperChanged: "Wallpaper changed successfully!",
+        backgroundUpdated: "Background has been updated.",
+        editMenu: "Edit Menu",
+        editAccount: "Edit Account",
+        cancel: "Cancel",
+        id: "ID",
+        customer: "Customer",
+        total: "Total",
+        time: "Time",
+        status: "Status",
+        action: "Action",
+        changeStatus: "Change Status",
+        pending: "Pending",
+        preparing: "Preparing",
+        ready: "Ready",
+        delivered: "Delivered"
+      };
+    }
+    return {
+      adminPanel: "Panel Admin",
+      welcome: "Selamat datang, Admin",
+      home: "Home",
+      logout: "Logout",
+      manageOrders: "Kelola Pesanan",
+      manageMenu: "Kelola Menu",
+      manageAccounts: "Kelola Akun",
+      settings: "Pengaturan",
+      allComments: "Semua Komentar",
+      noComments: "Belum ada komentar",
+      menuId: "Menu ID",
+      addMenu: "Tambah Menu",
+      menuName: "Nama Menu",
+      price: "Harga",
+      description: "Deskripsi",
+      category: "Kategori",
+      food: "Makanan",
+      drink: "Minuman",
+      save: "Simpan",
+      username: "Username",
+      email: "Email",
+      phone: "Phone",
+      role: "Role/Job",
+      addAccount: "Tambah Akun",
+      changeWallpaper: "Ubah Wallpaper/Background",
+      uploadImage: "Upload gambar untuk mengubah background semua halaman",
+      wallpaperPreview: "Preview Wallpaper",
+      wallpaperChanged: "Wallpaper berhasil diubah!",
+      backgroundUpdated: "Background telah diperbarui.",
+      editMenu: "Edit Menu",
+      editAccount: "Edit Akun",
+      cancel: "Batal",
+      id: "ID",
+      customer: "Pelanggan",
+      total: "Total",
+      time: "Waktu",
+      status: "Status",
+      action: "Aksi",
+      changeStatus: "Ubah Status",
+      pending: "Pending",
+      preparing: "Preparing",
+      ready: "Ready",
+      delivered: "Delivered"
+    };
+  };
+
+  const text = getText();
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("adminAuth");
@@ -215,17 +313,17 @@ const AdminDashboard = () => {
             <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
               <Shield className="h-8 w-8 text-green-600 mr-2" />
               <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-400 bg-clip-text text-transparent">
-                Admin Panel
+                {text.adminPanel}
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-gray-700 dark:text-gray-200">Selamat datang, Admin</span>
+              <span className="text-gray-700 dark:text-gray-200">{text.welcome}</span>
               <Button variant="outline" onClick={() => navigate("/")} className="gap-2 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
                 <ArrowLeft size={16} />
-                Home
+                {text.home}
               </Button>
               <Button variant="outline" onClick={handleLogout} className="dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
-                Logout
+                {text.logout}
               </Button>
             </div>
           </div>
@@ -239,47 +337,47 @@ const AdminDashboard = () => {
             onClick={() => setActiveSection('orders')}
             className="dark:border-gray-600 dark:text-gray-200"
           >
-            Kelola Pesanan
+            {text.manageOrders}
           </Button>
           <Button
             variant={activeSection === 'menu' ? 'default' : 'outline'}
             onClick={() => setActiveSection('menu')}
             className="dark:border-gray-600 dark:text-gray-200"
           >
-            Kelola Menu
+            {text.manageMenu}
           </Button>
           <Button
             variant={activeSection === 'accounts' ? 'default' : 'outline'}
             onClick={() => setActiveSection('accounts')}
             className="dark:border-gray-600 dark:text-gray-200"
           >
-            Kelola Akun
+            {text.manageAccounts}
           </Button>
           <Button
             variant={activeSection === 'settings' ? 'default' : 'outline'}
             onClick={() => setActiveSection('settings')}
             className="dark:border-gray-600 dark:text-gray-200"
           >
-            Pengaturan
+            {text.settings}
           </Button>
           <Button
             variant={activeSection === 'comments' ? 'default' : 'outline'}
             onClick={() => setActiveSection('comments')}
             className="dark:border-gray-600 dark:text-gray-200"
           >
-            Semua Komentar
+            {text.allComments}
           </Button>
         </div>
 
         {activeSection === 'comments' && (
           <Card className="dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
-              <CardTitle className="dark:text-gray-100">Semua Komentar dari User</CardTitle>
+              <CardTitle className="dark:text-gray-100">{text.allComments}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {allComments.length === 0 ? (
-                  <p className="text-gray-500 dark:text-gray-400">Belum ada komentar</p>
+                  <p className="text-gray-500 dark:text-gray-400">{text.noComments}</p>
                 ) : (
                   allComments.map((comment, index) => (
                     <div key={index} className="border-b border-gray-200 dark:border-gray-600 pb-3 last:border-b-0">
@@ -289,7 +387,7 @@ const AdminDashboard = () => {
                             <span key={i} className={i < comment.rating ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}>★</span>
                           ))}
                         </div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">Menu ID: {comment.menuId}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{text.menuId}: {comment.menuId}</span>
                         <span className="text-sm text-gray-500 dark:text-gray-400">{new Date(comment.date).toLocaleDateString('id-ID')}</span>
                       </div>
                       <p className="text-gray-700 dark:text-gray-200">{comment.comment}</p>
@@ -305,41 +403,41 @@ const AdminDashboard = () => {
         {activeSection === 'orders' && (
           <Card className="dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
-              <CardTitle className="dark:text-gray-100">Kelola Pesanan</CardTitle>
+              <CardTitle className="dark:text-gray-100">{text.manageOrders}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
                   <thead>
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pelanggan</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.id}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.customer}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.total}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.time}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.status}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.action}</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
                     {orders.map(order => (
                       <tr key={order.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">{order.id}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{order.customerName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{formatPrice(order.total)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{new Date(order.orderTime).toLocaleTimeString()}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{order.id}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{order.customerName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{formatPrice(order.total)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{new Date(order.orderTime).toLocaleTimeString()}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <Badge>{order.status}</Badge>
+                          <Badge className="dark:bg-primary dark:text-primary-foreground">{order.status}</Badge>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <Select value={order.status} onValueChange={(value) => handleChangeOrderStatus(order.id, value)}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Ubah Status" />
+                            <SelectTrigger className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+                              <SelectValue placeholder={text.changeStatus} />
                             </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="preparing">Preparing</SelectItem>
-                              <SelectItem value="ready">Ready</SelectItem>
-                              <SelectItem value="delivered">Delivered</SelectItem>
+                            <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                              <SelectItem value="pending" className="dark:text-gray-100">{text.pending}</SelectItem>
+                              <SelectItem value="preparing" className="dark:text-gray-100">{text.preparing}</SelectItem>
+                              <SelectItem value="ready" className="dark:text-gray-100">{text.ready}</SelectItem>
+                              <SelectItem value="delivered" className="dark:text-gray-100">{text.delivered}</SelectItem>
                             </SelectContent>
                           </Select>
                         </td>
@@ -354,72 +452,75 @@ const AdminDashboard = () => {
 
         {activeSection === 'menu' && (
           <div className="space-y-6">
-            <Card>
+            <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardHeader>
-                <CardTitle>Kelola Menu</CardTitle>
+                <CardTitle className="dark:text-gray-100">{text.manageMenu}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Nama Menu</Label>
+                    <Label className="dark:text-gray-200">{text.menuName}</Label>
                     <Input
                       value={newItem.name}
                       onChange={(e) => setNewItem({...newItem, name: e.target.value})}
-                      placeholder="Nama menu"
+                      placeholder={text.menuName}
+                      className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                     />
                   </div>
                   <div>
-                    <Label>Harga</Label>
+                    <Label className="dark:text-gray-200">{text.price}</Label>
                     <Input
                       type="number"
                       value={newItem.price}
                       onChange={(e) => setNewItem({...newItem, price: Number(e.target.value)})}
-                      placeholder="Harga"
+                      placeholder={text.price}
+                      className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                     />
                   </div>
                 </div>
                 <div>
-                  <Label>Deskripsi</Label>
+                  <Label className="dark:text-gray-200">{text.description}</Label>
                   <Input
                     value={newItem.description}
                     onChange={(e) => setNewItem({...newItem, description: e.target.value})}
-                    placeholder="Deskripsi menu"
+                    placeholder={text.description}
+                    className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                   />
                 </div>
                 <div>
-                  <Label>Kategori</Label>
+                  <Label className="dark:text-gray-200">{text.category}</Label>
                   <Select value={newItem.category} onValueChange={(value: "food" | "drink") => setNewItem({...newItem, category: value})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="food">Makanan</SelectItem>
-                      <SelectItem value="drink">Minuman</SelectItem>
+                    <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                      <SelectItem value="food" className="dark:text-gray-100">{text.food}</SelectItem>
+                      <SelectItem value="drink" className="dark:text-gray-100">{text.drink}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <Button onClick={saveMenuItem}>Tambah Menu</Button>
+                <Button onClick={saveMenuItem}>{text.addMenu}</Button>
               </CardContent>
             </Card>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {menuItems.map(item => (
-                <Card key={item.id} className="relative">
+                <Card key={item.id} className="relative dark:bg-gray-800 dark:border-gray-700">
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold">{item.name}</h3>
+                      <h3 className="font-semibold dark:text-gray-100">{item.name}</h3>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setEditingItem(item)}>
+                        <Button size="sm" variant="outline" onClick={() => setEditingItem(item)} className="dark:border-gray-600 dark:text-gray-200">
                           <Edit size={14} />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => deleteMenuItem(item.id)}>
+                        <Button size="sm" variant="outline" onClick={() => deleteMenuItem(item.id)} className="dark:border-gray-600 dark:text-gray-200">
                           <Trash2 size={14} />
                         </Button>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{item.description}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{item.description}</p>
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-primary">{formatPrice(item.price)}</span>
+                      <span className="font-bold text-primary dark:text-primary-foreground">{formatPrice(item.price)}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -430,54 +531,54 @@ const AdminDashboard = () => {
 
         {activeSection === 'accounts' && (
           <div className="space-y-6">
-            <Card>
+            <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardHeader>
-                <CardTitle>Kelola Akun</CardTitle>
+                <CardTitle className="dark:text-gray-100">{text.manageAccounts}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Username</Label>
+                    <Label className="dark:text-gray-200">{text.username}</Label>
                     <Input
                       value={newAccount.username}
                       onChange={(e) => setNewAccount({...newAccount, username: e.target.value})}
-                      placeholder="Username"
+                      placeholder={text.username}
                       className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                     />
                   </div>
                   <div>
-                    <Label>Password</Label>
+                    <Label className="dark:text-gray-200">{text.password}</Label>
                     <Input
                       type="password"
                       value={newAccount.password}
                       onChange={(e) => setNewAccount({...newAccount, password: e.target.value})}
-                      placeholder="Password"
+                      placeholder={text.password}
                       className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                     />
                   </div>
                 </div>
                 <div>
-                  <Label>Email</Label>
+                  <Label className="dark:text-gray-200">{text.email}</Label>
                   <Input
                     type="email"
                     value={newAccount.email}
                     onChange={(e) => setNewAccount({...newAccount, email: e.target.value})}
-                    placeholder="Email"
+                    placeholder={text.email}
                     className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                   />
                 </div>
                 <div>
-                  <Label>Phone</Label>
+                  <Label className="dark:text-gray-200">{text.phone}</Label>
                   <Input
                     type="tel"
                     value={newAccount.phone}
                     onChange={(e) => setNewAccount({...newAccount, phone: e.target.value})}
-                    placeholder="Phone"
+                    placeholder={text.phone}
                     className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                   />
                 </div>
                 <div>
-                  <Label>Role/Job</Label>
+                  <Label className="dark:text-gray-200">{text.role}</Label>
                   <Select value={newAccount.role} onValueChange={(value: "admin" | "driver" | "cashier" | "user") => setNewAccount({...newAccount, role: value})}>
                     <SelectTrigger className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">
                       <SelectValue />
@@ -490,7 +591,7 @@ const AdminDashboard = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button onClick={saveAccount}>Tambah Akun</Button>
+                <Button onClick={saveAccount}>{text.addAccount}</Button>
               </CardContent>
             </Card>
 
@@ -524,11 +625,11 @@ const AdminDashboard = () => {
         {activeSection === 'settings' && (
           <Card className="dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
-              <CardTitle className="dark:text-gray-100">Pengaturan</CardTitle>
+              <CardTitle className="dark:text-gray-100">{text.settings}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label className="dark:text-gray-200">Ubah Wallpaper/Background</Label>
+                <Label className="dark:text-gray-200">{text.changeWallpaper}</Label>
                 <Input
                   type="file"
                   accept="image/*"
@@ -536,12 +637,12 @@ const AdminDashboard = () => {
                   className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                 />
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Upload gambar untuk mengubah background semua halaman
+                  {text.uploadImage}
                 </p>
               </div>
               {wallpaper && (
                 <div>
-                  <Label className="dark:text-gray-200">Preview Wallpaper</Label>
+                  <Label className="dark:text-gray-200">{text.wallpaperPreview}</Label>
                   <img src={wallpaper} alt="Wallpaper Preview" className="w-32 h-20 object-cover rounded border" />
                 </div>
               )}
@@ -555,18 +656,18 @@ const AdminDashboard = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <Card className="w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
-              <CardTitle className="dark:text-gray-100">Edit Menu</CardTitle>
+              <CardTitle className="dark:text-gray-100">{text.editMenu}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label>Nama Menu</Label>
+                <Label className="dark:text-gray-200">{text.menuName}</Label>
                 <Input
                   value={editingItem.name}
                   onChange={(e) => setEditingItem({...editingItem, name: e.target.value})}
                 />
               </div>
               <div>
-                <Label>Harga</Label>
+                <Label className="dark:text-gray-200">{text.price}</Label>
                 <Input
                   type="number"
                   value={editingItem.price}
@@ -574,7 +675,7 @@ const AdminDashboard = () => {
                 />
               </div>
               <div>
-                <Label>Deskripsi</Label>
+                <Label className="dark:text-gray-200">{text.description}</Label>
                 <Input
                   value={editingItem.description}
                   onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
@@ -594,11 +695,11 @@ const AdminDashboard = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <Card className="w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
             <CardHeader>
-              <CardTitle className="dark:text-gray-100">Edit Akun</CardTitle>
+              <CardTitle className="dark:text-gray-100">{text.editAccount}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label className="dark:text-gray-200">Username</Label>
+                <Label className="dark:text-gray-200">{text.username}</Label>
                 <Input
                   value={editingAccount.username}
                   onChange={(e) => setEditingAccount({...editingAccount, username: e.target.value})}
@@ -606,7 +707,7 @@ const AdminDashboard = () => {
                 />
               </div>
               <div>
-                <Label className="dark:text-gray-200">Email</Label>
+                <Label className="dark:text-gray-200">{text.email}</Label>
                 <Input
                   type="email"
                   value={editingAccount.email}
@@ -615,7 +716,7 @@ const AdminDashboard = () => {
                 />
               </div>
               <div>
-                <Label className="dark:text-gray-200">Phone</Label>
+                <Label className="dark:text-gray-200">{text.phone}</Label>
                 <Input
                   type="tel"
                   value={editingAccount.phone}
@@ -624,7 +725,7 @@ const AdminDashboard = () => {
                 />
               </div>
               <div>
-                <Label className="dark:text-gray-200">Role/Job</Label>
+                <Label className="dark:text-gray-200">{text.role}</Label>
                 <Select value={editingAccount.role} onValueChange={(value: "admin" | "driver" | "cashier" | "user") => setEditingAccount({...editingAccount, role: value})}>
                   <SelectTrigger className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">
                     <SelectValue />

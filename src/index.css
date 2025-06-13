@@ -7,43 +7,43 @@
 
 @layer base {
   :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
     --primary: 263 70% 50%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
     --ring: 263 70% 50%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -75,6 +75,15 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 263 70% 50%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -141,6 +150,7 @@ nav button:hover {
   border: 2px solid rgba(0, 0, 0, 0.1) !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
   z-index: 9999 !important;
+  color: rgb(55, 65, 81) !important;
 }
 
 .dark .dropdown-content,
@@ -148,6 +158,7 @@ nav button:hover {
   background: rgb(31, 41, 55) !important;
   border: 2px solid rgba(255, 255, 255, 0.1) !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+  color: rgb(209, 213, 219) !important;
 }
 
 /* Menu item hover effects */
@@ -188,12 +199,12 @@ nav button:hover {
   align-items: center;
   font-size: 14px;
   font-weight: 500;
-  color: rgb(55, 65, 81);
+  color: rgb(55, 65, 81) !important;
   transition: all 0.2s ease;
 }
 
 .dark [data-radix-dropdown-menu-item] {
-  color: rgb(209, 213, 219);
+  color: rgb(209, 213, 219) !important;
 }
 
 [data-radix-dropdown-menu-item]:focus {
@@ -230,4 +241,15 @@ nav {
 /* Dark mode transitions */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Panel dropdown fixes */
+.dark [data-radix-dropdown-menu-trigger] {
+  color: rgb(209, 213, 219) !important;
+  border-color: rgba(75, 85, 99, 0.6) !important;
+}
+
+.dark [data-radix-dropdown-menu-trigger]:hover {
+  background-color: rgb(55, 65, 81) !important;
+  border-color: rgba(139, 92, 246, 0.6) !important;
 }

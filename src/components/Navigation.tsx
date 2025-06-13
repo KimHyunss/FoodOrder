@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ShoppingCart, Utensils, Clock, Shield, User, Truck, ChevronDown, Settings, Languages, Moon, Sun, LogOut, UserPlus, Trash2, RotateCcw, CreditCard } from "lucide-react";
@@ -47,7 +48,11 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
   }, []);
 
   const handleAdminPanel = () => {
-    navigate("/admin/login");
+    if (isAdminLoggedIn) {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/admin/login");
+    }
   };
 
   const handleUserLogin = () => {
@@ -55,25 +60,38 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
   };
 
   const handleDriverPanel = () => {
-    navigate("/driver/login");
+    if (isDriverLoggedIn) {
+      navigate("/driver/dashboard");
+    } else {
+      navigate("/driver/login");
+    }
   };
 
   const handleCashierPanel = () => {
-    navigate("/cashier/login");
+    if (isCashierLoggedIn) {
+      navigate("/cashier/dashboard");
+    } else {
+      navigate("/cashier/login");
+    }
   };
 
   const handleUserLogout = () => {
     localStorage.removeItem("userLoggedIn");
     localStorage.removeItem("currentUser");
     localStorage.removeItem("currentUserData");
+    localStorage.removeItem("adminAuth");
+    localStorage.removeItem("driverLoggedIn");
+    localStorage.removeItem("currentDriver");
+    localStorage.removeItem("cashierLoggedIn");
+    localStorage.removeItem("currentCashier");
     window.location.reload();
   };
 
   const getCurrentUserDisplay = () => {
-    if (isAdminLoggedIn) return "Admin";
-    if (isDriverLoggedIn) return `Driver: ${currentDriver}`;
-    if (isCashierLoggedIn) return `Kasir: ${currentCashier}`;
-    if (isUserLoggedIn) return `User: ${currentUser}`;
+    if (isAdminLoggedIn) return language === "en" ? "Admin" : "Admin";
+    if (isDriverLoggedIn) return language === "en" ? `Driver: ${currentDriver}` : `Driver: ${currentDriver}`;
+    if (isCashierLoggedIn) return language === "en" ? `Cashier: ${currentCashier}` : `Kasir: ${currentCashier}`;
+    if (isUserLoggedIn) return language === "en" ? `User: ${currentUser}` : `User: ${currentUser}`;
     return null;
   };
 
@@ -93,6 +111,7 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
   const changeLanguage = (lang: string) => {
     setLanguage(lang);
     localStorage.setItem("language", lang);
+    window.location.reload();
   };
 
   const getLanguageText = () => {
@@ -101,7 +120,7 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
         menu: "Menu",
         cart: "Cart", 
         orders: "Orders",
-        login: "Login User",
+        login: "User Login",
         panel: "Panel",
         settings: "Settings",
         language: "Language",
@@ -145,26 +164,13 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 shadow-xl z-[9999]">
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200">
-                    <Settings size={16} className="mr-2" />
-                    {text.settings}
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 shadow-xl z-[9999]">
-                    <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200">
-                      <User size={16} className="mr-2" />
-                      {text.accountSettings}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200">
-                      <RotateCcw size={16} className="mr-2" />
-                      {text.transactions}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200">
-                      <Trash2 size={16} className="mr-2" />
-                      {text.advancedSettings}
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
+                <DropdownMenuItem 
+                  onClick={() => navigate("/settings")}
+                  className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200"
+                >
+                  <Settings size={16} className="mr-2" />
+                  {text.settings}
+                </DropdownMenuItem>
                 
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 text-gray-700 dark:text-gray-200">
@@ -188,7 +194,7 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
 
                 <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-600" />
 
-                {isUserLoggedIn && (
+                {(isUserLoggedIn || isAdminLoggedIn || isDriverLoggedIn || isCashierLoggedIn) && (
                   <DropdownMenuItem onClick={handleUserLogout} className="cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 focus:bg-red-50 dark:focus:bg-red-900/20 text-red-600 dark:text-red-400">
                     <LogOut size={16} className="mr-2" />
                     {text.logout}
@@ -252,7 +258,7 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
                 </div>
               )}
               
-              {!isUserLoggedIn && (
+              {!isUserLoggedIn && !isAdminLoggedIn && !isDriverLoggedIn && !isCashierLoggedIn && (
                 <button 
                   onClick={handleUserLogin}
                   className="hover:text-primary hover:bg-primary/20 transition-colors duration-200 flex items-center gap-2 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-200"
@@ -273,15 +279,15 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
                 <DropdownMenuContent className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 shadow-xl z-[9999]">
                   <DropdownMenuItem onClick={handleCashierPanel} className="cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/20 focus:bg-orange-50 dark:focus:bg-orange-900/20 text-gray-700 dark:text-gray-200">
                     <CreditCard size={16} className="mr-2" />
-                    Cashier Panel
+                    {language === "en" ? "Cashier Panel" : "Panel Kasir"}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleDriverPanel} className="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:bg-blue-50 dark:focus:bg-blue-900/20 text-gray-700 dark:text-gray-200">
                     <Truck size={16} className="mr-2" />
-                    Driver Panel
+                    {language === "en" ? "Driver Panel" : "Panel Driver"}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleAdminPanel} className="cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 focus:bg-green-50 dark:focus:bg-green-900/20 text-gray-700 dark:text-gray-200">
                     <Shield size={16} className="mr-2" />
-                    Admin Panel
+                    {language === "en" ? "Admin Panel" : "Panel Admin"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -331,11 +337,11 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
             
             {getCurrentUserDisplay() && (
               <div className="px-3 py-2">
-                <span className="text-sm text-gray-600">{getCurrentUserDisplay()}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">{getCurrentUserDisplay()}</span>
               </div>
             )}
             
-            {!isUserLoggedIn && (
+            {!isUserLoggedIn && !isAdminLoggedIn && !isDriverLoggedIn && !isCashierLoggedIn && (
               <button 
                 onClick={() => { handleUserLogin(); setIsOpen(false); }}
                 className="block px-3 py-2 hover:text-primary hover:bg-primary/10 transition-colors w-full text-left rounded-lg text-gray-700 dark:text-gray-200"
@@ -346,23 +352,23 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
             
             <button 
               onClick={() => { handleCashierPanel(); setIsOpen(false); }}
-              className="block px-3 py-2 hover:text-orange-600 hover:bg-orange-50 transition-colors w-full text-left rounded-lg text-gray-700 dark:text-gray-200"
+              className="block px-3 py-2 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors w-full text-left rounded-lg text-gray-700 dark:text-gray-200"
             >
-              Cashier Panel
+              {language === "en" ? "Cashier Panel" : "Panel Kasir"}
             </button>
             
             <button 
               onClick={() => { handleDriverPanel(); setIsOpen(false); }}
-              className="block px-3 py-2 hover:text-blue-600 hover:bg-blue-50 transition-colors w-full text-left rounded-lg text-gray-700 dark:text-gray-200"
+              className="block px-3 py-2 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors w-full text-left rounded-lg text-gray-700 dark:text-gray-200"
             >
-              Driver Panel
+              {language === "en" ? "Driver Panel" : "Panel Driver"}
             </button>
             
             <button 
               onClick={() => { handleAdminPanel(); setIsOpen(false); }}
-              className="block px-3 py-2 hover:text-primary hover:bg-green-50 transition-colors w-full text-left rounded-lg text-gray-700 dark:text-gray-200"
+              className="block px-3 py-2 hover:text-primary hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors w-full text-left rounded-lg text-gray-700 dark:text-gray-200"
             >
-              Admin Panel
+              {language === "en" ? "Admin Panel" : "Panel Admin"}
             </button>
           </div>
         </div>
