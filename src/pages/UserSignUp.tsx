@@ -11,10 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 const UserSignUp = () => {
   const [formData, setFormData] = useState({
     username: "",
-    password: "",
-    confirmPassword: "",
+    phone: "",
     email: "",
-    phone: ""
+    password: "",
+    confirmPassword: ""
   });
   const [profileImage, setProfileImage] = useState<string>("");
   const navigate = useNavigate();
@@ -128,72 +128,82 @@ const UserSignUp = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-sm font-semibold text-gray-700">1. Username</Label>
               <Input
                 id="username"
                 name="username"
                 type="text"
                 value={formData.username}
                 onChange={handleInputChange}
+                placeholder="Masukkan username"
+                className="border-2 border-gray-300 focus:border-primary"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Konfirmasi Password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone">Nomor Telepon</Label>
+              <Label htmlFor="phone" className="text-sm font-semibold text-gray-700">2. Nomor Telepon</Label>
               <Input
                 id="phone"
                 name="phone"
                 type="tel"
                 value={formData.phone}
                 onChange={handleInputChange}
+                placeholder="Masukkan nomor telepon"
+                className="border-2 border-gray-300 focus:border-primary"
                 required
               />
             </div>
 
-            <Button type="submit" className="w-full">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-semibold text-gray-700">3. Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Masukkan email"
+                className="border-2 border-gray-300 focus:border-primary"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-semibold text-gray-700">4. Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="Masukkan password"
+                className="border-2 border-gray-300 focus:border-primary"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-700">5. Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                placeholder="Konfirmasi password"
+                className="border-2 border-gray-300 focus:border-primary"
+                required
+              />
+            </div>
+
+            <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
               Daftar
             </Button>
 
             <div className="text-center">
               <span className="text-gray-600">Sudah punya akun? </span>
-              <Button variant="link" onClick={() => navigate("/user/login")} className="p-0">
+              <Button variant="link" onClick={() => navigate("/user/login")} className="p-0 text-primary">
                 Login di sini
               </Button>
             </div>
