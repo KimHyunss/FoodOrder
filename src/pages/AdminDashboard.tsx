@@ -1,149 +1,43 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Shield, ArrowLeft, User, Mail, Phone, Key, Edit, Trash2, Plus, MessageSquare } from "lucide-react";
+import { ArrowLeft, Shield, User, Phone, MapPin, CreditCard, Edit, Trash2, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { MenuItem } from "@/pages/Index";
-
-type Order = {
-  id: number;
-  items: any[];
-  total: number;
-  status: string;
-  orderTime: Date;
-  customerName: string;
-  customerPhone: string;
-  customerAddress?: string;
-  paymentMethod?: string;
-};
-
-type Account = {
-  username: string;
-  password: string;
-  email: string;
-  phone: string;
-  role: 'admin' | 'driver' | 'cashier' | 'user';
-};
 
 const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState<'orders' | 'menu' | 'accounts' | 'settings' | 'comments'>('orders');
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
-  const [newItem, setNewItem] = useState({ name: "", description: "", price: 0, category: "food" as "food" | "drink", image: "" });
-  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
-  const [newAccount, setNewAccount] = useState({ username: "", password: "", email: "", phone: "", role: "user" as "admin" | "driver" | "cashier" | "user" });
+  const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'accounts' | 'comments' | 'footer'>('orders');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const [comments, setComments] = useState<any[]>([]);
+  const [editingAccount, setEditingAccount] = useState<any | null>(null);
+  const [footerInfo, setFooterInfo] = useState({
+    companyName: "FoodOrder",
+    description: "",
+    phone: "+62 812-3456-7890",
+    email: "info@foodorder.com",
+    address: "Jakarta, Indonesia",
+    operationalHours: {
+      weekdays: "08:00 - 22:00",
+      weekend: "10:00 - 23:00"
+    }
+  });
+  const [language, setLanguage] = useState("id");
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [allComments, setAllComments] = useState<any[]>([]);
-  const [wallpaper, setWallpaper] = useState("");
-  const language = localStorage.getItem("language") || "id";
 
-  const getText = () => {
-    if (language === "en") {
-      return {
-        adminPanel: "Admin Panel",
-        welcome: "Welcome, Admin",
-        home: "Home",
-        logout: "Logout",
-        manageOrders: "Manage Orders",
-        manageMenu: "Manage Menu",
-        manageAccounts: "Manage Accounts",
-        settings: "Settings",
-        allComments: "All Comments",
-        noComments: "No comments yet",
-        menuId: "Menu ID",
-        addMenu: "Add Menu",
-        menuName: "Menu Name",
-        price: "Price",
-        description: "Description",
-        category: "Category",
-        food: "Food",
-        drink: "Drink",
-        save: "Save",
-        username: "Username",
-        password: "Password",
-        email: "Email",
-        phone: "Phone",
-        role: "Role",
-        addAccount: "Add Account",
-        changeWallpaper: "Change Wallpaper/Background",
-        uploadImage: "Upload image to change all pages background",
-        wallpaperPreview: "Wallpaper Preview",
-        wallpaperChanged: "Wallpaper changed successfully!",
-        backgroundUpdated: "Background has been updated.",
-        editMenu: "Edit Menu",
-        editAccount: "Edit Account",
-        cancel: "Cancel",
-        id: "ID",
-        customer: "Customer",
-        total: "Total",
-        time: "Time",
-        status: "Status",
-        action: "Action",
-        changeStatus: "Change Status",
-        pending: "Pending",
-        preparing: "Preparing",
-        ready: "Ready",
-        delivered: "Delivered"
-      };
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language");
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
     }
-    return {
-      adminPanel: "Panel Admin",
-      welcome: "Selamat datang, Admin",
-      home: "Home",
-      logout: "Logout",
-      manageOrders: "Kelola Pesanan",
-      manageMenu: "Kelola Menu",
-      manageAccounts: "Kelola Akun",
-      settings: "Pengaturan",
-      allComments: "Semua Komentar",
-      noComments: "Belum ada komentar",
-      menuId: "Menu ID",
-      addMenu: "Tambah Menu",
-      menuName: "Nama Menu",
-      price: "Harga",
-      description: "Deskripsi",
-      category: "Kategori",
-      food: "Makanan",
-      drink: "Minuman",
-      save: "Simpan",
-      username: "Username",
-      password: "Password",
-      email: "Email",
-      phone: "Phone",
-      role: "Role/Job",
-      addAccount: "Tambah Akun",
-      changeWallpaper: "Ubah Wallpaper/Background",
-      uploadImage: "Upload gambar untuk mengubah background semua halaman",
-      wallpaperPreview: "Preview Wallpaper",
-      wallpaperChanged: "Wallpaper berhasil diubah!",
-      backgroundUpdated: "Background telah diperbarui.",
-      editMenu: "Edit Menu",
-      editAccount: "Edit Akun",
-      cancel: "Batal",
-      id: "ID",
-      customer: "Pelanggan",
-      total: "Total",
-      time: "Waktu",
-      status: "Status",
-      action: "Aksi",
-      changeStatus: "Ubah Status",
-      pending: "Pending",
-      preparing: "Preparing",
-      ready: "Ready",
-      delivered: "Delivered"
-    };
-  };
-
-  const text = getText();
+  }, []);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("adminAuth");
@@ -151,108 +45,229 @@ const AdminDashboard = () => {
       navigate("/admin/login");
       return;
     }
+    loadData();
+  }, [navigate]);
 
-    // Load orders
+  const getLanguageText = () => {
+    if (language === "en") {
+      return {
+        adminPanel: "Admin Panel",
+        welcome: "Welcome",
+        home: "Home",
+        logout: "Logout",
+        manageOrders: "Manage Orders",
+        manageMenu: "Manage Menu",
+        manageAccounts: "Manage Accounts",
+        settings: "Settings",
+        allComments: "All Comments",
+        footerInformation: "Footer Information",
+        noComments: "No comments available",
+        orderNumber: "Order #",
+        customer: "Customer",
+        phone: "Phone",
+        address: "Address",
+        payment: "Payment",
+        status: "Status",
+        total: "Total",
+        updateStatus: "Update Status",
+        noOrders: "No orders available",
+        pending: "Pending",
+        preparing: "Preparing",
+        ready: "Ready",
+        delivered: "Delivered",
+        menuName: "Menu Name",
+        description: "Description",
+        price: "Price",
+        category: "Category",
+        food: "Food",
+        drink: "Drink",
+        save: "Save",
+        username: "Username",
+        password: "Password",
+        email: "Email",
+        phone2: "Phone",
+        role: "Role",
+        admin: "Admin",
+        driver: "Driver",
+        cashier: "Cashier",
+        user: "User",
+        addAccount: "Add Account",
+        edit: "Edit",
+        delete: "Delete",
+        editAccount: "Edit Account",
+        cancel: "Cancel",
+        companyName: "Company Name",
+        companyDescription: "Company Description",
+        contactPhone: "Contact Phone",
+        contactEmail: "Contact Email",
+        companyAddress: "Company Address",
+        weekdayHours: "Weekday Hours (Mon-Fri)",
+        weekendHours: "Weekend Hours (Sat-Sun)",
+        saveFooterInfo: "Save Footer Information",
+        footerInfoSaved: "Footer Information Saved!",
+        footerInfoUpdated: "Footer information has been updated successfully."
+      };
+    }
+    return {
+      adminPanel: "Panel Admin",
+      welcome: "Selamat datang",
+      home: "Home",
+      logout: "Logout",
+      manageOrders: "Kelola Pesanan",
+      manageMenu: "Kelola Menu",
+      manageAccounts: "Kelola Akun",
+      settings: "Pengaturan",
+      allComments: "Semua Komentar",
+      footerInformation: "Informasi Footer",
+      noComments: "Tidak ada komentar tersedia",
+      orderNumber: "Pesanan #",
+      customer: "Pelanggan",
+      phone: "Telepon",
+      address: "Alamat",
+      payment: "Pembayaran",
+      status: "Status",
+      total: "Total",
+      updateStatus: "Update Status",
+      noOrders: "Tidak ada pesanan tersedia",
+      pending: "Menunggu",
+      preparing: "Diproses",
+      ready: "Siap",
+      delivered: "Dikirim",
+      menuName: "Nama Menu",
+      description: "Deskripsi",
+      price: "Harga",
+      category: "Kategori",
+      food: "Makanan",
+      drink: "Minuman",
+      save: "Simpan",
+      username: "Username",
+      password: "Password",
+      email: "Email",
+      phone2: "Telepon",
+      role: "Role/Job",
+      admin: "Admin",
+      driver: "Driver",
+      cashier: "Kasir",
+      user: "User",
+      addAccount: "Tambah Akun",
+      edit: "Edit",
+      delete: "Hapus",
+      editAccount: "Edit Akun",
+      cancel: "Batal",
+      companyName: "Nama Perusahaan",
+      companyDescription: "Deskripsi Perusahaan", 
+      contactPhone: "Telepon Kontak",
+      contactEmail: "Email Kontak",
+      companyAddress: "Alamat Perusahaan",
+      weekdayHours: "Jam Kerja (Sen-Jum)",
+      weekendHours: "Jam Weekend (Sab-Min)",
+      saveFooterInfo: "Simpan Info Footer",
+      footerInfoSaved: "Info Footer Tersimpan!",
+      footerInfoUpdated: "Informasi footer berhasil diperbarui."
+    };
+  };
+
+  const text = getLanguageText();
+
+  const loadData = () => {
     const savedOrders = localStorage.getItem("orders");
     if (savedOrders) {
       setOrders(JSON.parse(savedOrders));
+    } else {
+      setOrders([]);
     }
-
-    // Load menu items
-    const defaultMenuItems: MenuItem[] = [
-      { id: 1, name: "Nasi Goreng Spesial", description: "Nasi goreng dengan telur, ayam, dan sayuran segar", price: 25000, category: "food", image: "/placeholder.svg", rating: 4.5, reviews: 120 },
-      { id: 2, name: "Mie Ayam Bakso", description: "Mie ayam dengan bakso sapi dan pangsit goreng", price: 20000, category: "food", image: "/placeholder.svg", rating: 4.7, reviews: 89 },
-      { id: 3, name: "Es Teh Manis", description: "Teh manis dingin yang menyegarkan", price: 8000, category: "drink", image: "/placeholder.svg", rating: 4.2, reviews: 65 },
-      { id: 4, name: "Jus Jeruk Segar", description: "Jus jeruk asli tanpa pengawet", price: 15000, category: "drink", image: "/placeholder.svg", rating: 4.6, reviews: 43 }
-    ];
 
     const savedMenuItems = localStorage.getItem("menuItems");
     if (savedMenuItems) {
       setMenuItems(JSON.parse(savedMenuItems));
     } else {
-      setMenuItems(defaultMenuItems);
-      localStorage.setItem("menuItems", JSON.stringify(defaultMenuItems));
+      setMenuItems([]);
     }
 
-    // Load accounts with default roles
-    const savedAccounts = localStorage.getItem("registeredUsers");
+    const savedAccounts = localStorage.getItem("accounts");
     if (savedAccounts) {
-      const accountsData = JSON.parse(savedAccounts);
-      const accountsWithRoles = accountsData.map((account: any) => ({
-        ...account,
-        role: account.role || 'user'
-      }));
-      setAccounts(accountsWithRoles);
+      setAccounts(JSON.parse(savedAccounts));
+    } else {
+      setAccounts([]);
     }
-    
-    // Load all comments
-    const comments = [];
-    const menuIds = [1, 2, 3, 4];
-    menuIds.forEach(id => {
-      const menuComments = JSON.parse(localStorage.getItem(`menu_${id}_comments`) || "[]");
-      comments.push(...menuComments.map((comment: any) => ({...comment, menuId: id})));
+
+    const savedComments = localStorage.getItem("comments");
+    if (savedComments) {
+      setComments(JSON.parse(savedComments));
+    } else {
+      setComments([]);
+    }
+
+    const savedFooterInfo = localStorage.getItem("footerInfo");
+    if (savedFooterInfo) {
+      setFooterInfo(JSON.parse(savedFooterInfo));
+    }
+  };
+
+  const saveOrderStatus = (orderId: number, status: string) => {
+    const updatedOrders = orders.map(order => 
+      order.id === orderId ? { ...order, status } : order
+    );
+    setOrders(updatedOrders);
+    localStorage.setItem("orders", JSON.stringify(updatedOrders));
+    toast({
+      title: text.updateStatus,
+      description: `${text.orderNumber} ${orderId} ${text.status} ${status}`,
     });
-    setAllComments(comments.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+  };
 
-    // Load wallpaper
-    const savedWallpaper = localStorage.getItem("adminWallpaper");
-    if (savedWallpaper) {
-      setWallpaper(savedWallpaper);
-      document.body.style.backgroundImage = `url(${savedWallpaper})`;
-      document.body.style.backgroundSize = 'cover';
-      document.body.style.backgroundPosition = 'center';
-    }
-  }, [navigate]);
-
-  const saveMenuItem = () => {
-    if (editingItem) {
-      const updatedItems = menuItems.map(item =>
-        item.id === editingItem.id ? editingItem : item
-      );
-      setMenuItems(updatedItems);
-      localStorage.setItem("menuItems", JSON.stringify(updatedItems));
-      setEditingItem(null);
-    } else if (newItem.name && newItem.price > 0) {
-      const newMenuItem: MenuItem = {
-        ...newItem,
-        id: Date.now(),
-        image: "/placeholder.svg",
-        rating: 0,
-        reviews: 0
-      };
-      const updatedItems = [...menuItems, newMenuItem];
-      setMenuItems(updatedItems);
-      localStorage.setItem("menuItems", JSON.stringify(updatedItems));
-      setNewItem({ name: "", description: "", price: 0, category: "food", image: "" });
-    }
+  const saveMenuItem = (updatedItem: any) => {
+    const updatedMenu = menuItems.map(item =>
+      item.id === updatedItem.id ? updatedItem : item
+    );
+    setMenuItems(updatedMenu);
+    localStorage.setItem("menuItems", JSON.stringify(updatedMenu));
+    toast({
+      title: text.save,
+      description: `${text.menuName} ${updatedItem.name} saved.`,
+    });
   };
 
   const deleteMenuItem = (id: number) => {
-    const updatedItems = menuItems.filter(item => item.id !== id);
-    setMenuItems(updatedItems);
-    localStorage.setItem("menuItems", JSON.stringify(updatedItems));
+    const updatedMenu = menuItems.filter(item => item.id !== id);
+    setMenuItems(updatedMenu);
+    localStorage.setItem("menuItems", JSON.stringify(updatedMenu));
+    toast({
+      title: text.delete,
+      description: `${text.menuName} deleted.`,
+    });
   };
 
   const saveAccount = () => {
-    if (editingAccount) {
-      const updatedAccounts = accounts.map(account =>
-        account.username === editingAccount.username ? editingAccount : account
-      );
-      setAccounts(updatedAccounts);
-      localStorage.setItem("registeredUsers", JSON.stringify(updatedAccounts));
-      setEditingAccount(null);
-    } else if (newAccount.username && newAccount.password && newAccount.email && newAccount.phone) {
-      const updatedAccounts = [...accounts, newAccount];
-      setAccounts(updatedAccounts);
-      localStorage.setItem("registeredUsers", JSON.stringify(updatedAccounts));
-      setNewAccount({ username: "", password: "", email: "", phone: "", role: "user" });
-    }
+    if (!editingAccount) return;
+    const updatedAccounts = accounts.map(acc =>
+      acc.id === editingAccount.id ? editingAccount : acc
+    );
+    setAccounts(updatedAccounts);
+    localStorage.setItem("accounts", JSON.stringify(updatedAccounts));
+    setEditingAccount(null);
+    toast({
+      title: text.save,
+      description: `${text.editAccount} saved.`,
+    });
   };
 
-  const deleteAccount = (username: string) => {
-    const updatedAccounts = accounts.filter(account => account.username !== username);
+  const deleteAccount = (id: number) => {
+    const updatedAccounts = accounts.filter(acc => acc.id !== id);
     setAccounts(updatedAccounts);
-    localStorage.setItem("registeredUsers", JSON.stringify(updatedAccounts));
+    localStorage.setItem("accounts", JSON.stringify(updatedAccounts));
+    toast({
+      title: text.delete,
+      description: `${text.editAccount} deleted.`,
+    });
+  };
+
+  const saveFooterInfo = () => {
+    localStorage.setItem("footerInfo", JSON.stringify(footerInfo));
+    toast({
+      title: text.footerInfoSaved,
+      description: text.footerInfoUpdated,
+    });
   };
 
   const handleLogout = () => {
@@ -260,71 +275,25 @@ const AdminDashboard = () => {
     navigate("/");
   };
 
-  const handleChangeOrderStatus = (orderId: number, newStatus: string) => {
-    const updatedOrders = orders.map(order =>
-      order.id === orderId ? { ...order, status: newStatus } : order
-    );
-    setOrders(updatedOrders);
-    localStorage.setItem("orders", JSON.stringify(updatedOrders));
-  };
-
-  const handleWallpaperChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setWallpaper(result);
-        localStorage.setItem("adminWallpaper", result);
-        document.body.style.backgroundImage = `url(${result})`;
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundPosition = 'center';
-        toast({
-          title: "Wallpaper berhasil diubah!",
-          description: "Background telah diperbarui.",
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    }).format(price);
-  };
-
-  const getRoleDisplay = (role: string) => {
-    switch(role) {
-      case 'admin': return 'Admin';
-      case 'driver': return 'Driver';
-      case 'cashier': return 'Kasir';
-      case 'user': return 'User';
-      default: return 'User';
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 dark:from-green-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
-      <nav className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-white/20 dark:border-gray-700/20 shadow-lg">
+      <nav className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-b border-white/20 dark:border-gray-700/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
-              <Shield className="h-8 w-8 text-green-600 mr-2" />
+              <Shield className="h-8 w-8 text-green-600 dark:text-green-400 mr-2" />
               <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-400 bg-clip-text text-transparent">
                 {text.adminPanel}
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-gray-700 dark:text-gray-200">{text.welcome}</span>
-              <Button variant="outline" onClick={() => navigate("/")} className="gap-2 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
+              <span className="text-gray-700 dark:text-gray-300">{text.welcome}, Admin</span>
+              <Button variant="outline" onClick={() => navigate("/")} className="gap-2 dark:border-gray-600 dark:text-gray-300">
                 <ArrowLeft size={16} />
                 {text.home}
               </Button>
-              <Button variant="outline" onClick={handleLogout} className="dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
+              <Button variant="outline" onClick={handleLogout} className="dark:border-gray-600 dark:text-gray-300">
                 {text.logout}
               </Button>
             </div>
@@ -333,416 +302,292 @@ const AdminDashboard = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-4 mb-6 flex-wrap">
-          <Button
-            variant={activeSection === 'orders' ? 'default' : 'outline'}
-            onClick={() => setActiveSection('orders')}
-            className="dark:border-gray-600 dark:text-gray-200"
-          >
-            {text.manageOrders}
-          </Button>
-          <Button
-            variant={activeSection === 'menu' ? 'default' : 'outline'}
-            onClick={() => setActiveSection('menu')}
-            className="dark:border-gray-600 dark:text-gray-200"
-          >
-            {text.manageMenu}
-          </Button>
-          <Button
-            variant={activeSection === 'accounts' ? 'default' : 'outline'}
-            onClick={() => setActiveSection('accounts')}
-            className="dark:border-gray-600 dark:text-gray-200"
-          >
-            {text.manageAccounts}
-          </Button>
-          <Button
-            variant={activeSection === 'settings' ? 'default' : 'outline'}
-            onClick={() => setActiveSection('settings')}
-            className="dark:border-gray-600 dark:text-gray-200"
-          >
-            {text.settings}
-          </Button>
-          <Button
-            variant={activeSection === 'comments' ? 'default' : 'outline'}
-            onClick={() => setActiveSection('comments')}
-            className="dark:border-gray-600 dark:text-gray-200"
-          >
-            {text.allComments}
-          </Button>
-        </div>
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 max-w-2xl bg-white/90 dark:bg-gray-800/90">
+            <TabsTrigger value="orders" className="dark:text-gray-300">{text.manageOrders}</TabsTrigger>
+            <TabsTrigger value="menu" className="dark:text-gray-300">{text.manageMenu}</TabsTrigger>
+            <TabsTrigger value="accounts" className="dark:text-gray-300">{text.manageAccounts}</TabsTrigger>
+            <TabsTrigger value="comments" className="dark:text-gray-300">{text.allComments}</TabsTrigger>
+            <TabsTrigger value="footer" className="dark:text-gray-300">{text.footerInformation}</TabsTrigger>
+          </TabsList>
 
-        {activeSection === 'comments' && (
-          <Card className="dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader>
-              <CardTitle className="dark:text-gray-100">{text.allComments}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {allComments.length === 0 ? (
-                  <p className="text-gray-500 dark:text-gray-400">{text.noComments}</p>
-                ) : (
-                  allComments.map((comment, index) => (
-                    <div key={index} className="border-b border-gray-200 dark:border-gray-600 pb-3 last:border-b-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="flex text-yellow-400">
-                          {[...Array(5)].map((_, i) => (
-                            <span key={i} className={i < comment.rating ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}>★</span>
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{text.menuId}: {comment.menuId}</span>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{new Date(comment.date).toLocaleDateString('id-ID')}</span>
-                      </div>
-                      <p className="text-gray-700 dark:text-gray-200">{comment.comment}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">- {comment.userName}</p>
+          <TabsContent value="orders" className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{text.manageOrders}</h2>
+            {orders.length === 0 ? (
+              <p className="text-gray-600 dark:text-gray-400">{text.noOrders}</p>
+            ) : (
+              orders.map(order => (
+                <Card key={order.id} className="bg-white/95 dark:bg-gray-800/95 backdrop-blur">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg text-gray-900 dark:text-gray-100">{text.orderNumber} {order.id}</CardTitle>
+                      <Badge variant={
+                        order.status === 'pending' ? 'destructive' :
+                        order.status === 'preparing' ? 'warning' :
+                        order.status === 'ready' ? 'success' : 'secondary'
+                      }>
+                        {order.status === 'pending' ? text.pending :
+                         order.status === 'preparing' ? text.preparing :
+                         order.status === 'ready' ? text.ready : text.delivered}
+                      </Badge>
                     </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {activeSection === 'orders' && (
-          <Card className="dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader>
-              <CardTitle className="dark:text-gray-100">{text.manageOrders}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                  <thead>
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.id}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.customer}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.total}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.time}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.status}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{text.action}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
-                    {orders.map(order => (
-                      <tr key={order.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{order.id}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{order.customerName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{formatPrice(order.total)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{new Date(order.orderTime).toLocaleTimeString()}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Badge className="dark:bg-primary dark:text-primary-foreground">{order.status}</Badge>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <Select value={order.status} onValueChange={(value) => handleChangeOrderStatus(order.id, value)}>
-                            <SelectTrigger className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
-                              <SelectValue placeholder={text.changeStatus} />
-                            </SelectTrigger>
-                            <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                              <SelectItem value="pending" className="dark:text-gray-100">{text.pending}</SelectItem>
-                              <SelectItem value="preparing" className="dark:text-gray-100">{text.preparing}</SelectItem>
-                              <SelectItem value="ready" className="dark:text-gray-100">{text.ready}</SelectItem>
-                              <SelectItem value="delivered" className="dark:text-gray-100">{text.delivered}</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {activeSection === 'menu' && (
-          <div className="space-y-6">
-            <Card className="dark:bg-gray-800 dark:border-gray-700">
-              <CardHeader>
-                <CardTitle className="dark:text-gray-100">{text.manageMenu}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="dark:text-gray-200">{text.menuName}</Label>
-                    <Input
-                      value={newItem.name}
-                      onChange={(e) => setNewItem({...newItem, name: e.target.value})}
-                      placeholder={text.menuName}
-                      className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                    />
-                  </div>
-                  <div>
-                    <Label className="dark:text-gray-200">{text.price}</Label>
-                    <Input
-                      type="number"
-                      value={newItem.price}
-                      onChange={(e) => setNewItem({...newItem, price: Number(e.target.value)})}
-                      placeholder={text.price}
-                      className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label className="dark:text-gray-200">{text.description}</Label>
-                  <Input
-                    value={newItem.description}
-                    onChange={(e) => setNewItem({...newItem, description: e.target.value})}
-                    placeholder={text.description}
-                    className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                  />
-                </div>
-                <div>
-                  <Label className="dark:text-gray-200">{text.category}</Label>
-                  <Select value={newItem.category} onValueChange={(value: "food" | "drink") => setNewItem({...newItem, category: value})}>
-                    <SelectTrigger className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                      <SelectItem value="food" className="dark:text-gray-100">{text.food}</SelectItem>
-                      <SelectItem value="drink" className="dark:text-gray-100">{text.drink}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button onClick={saveMenuItem}>{text.addMenu}</Button>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {menuItems.map(item => (
-                <Card key={item.id} className="relative dark:bg-gray-800 dark:border-gray-700">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold dark:text-gray-100">{item.name}</h3>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setEditingItem(item)} className="dark:border-gray-600 dark:text-gray-200">
-                          <Edit size={14} />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => deleteMenuItem(item.id)} className="dark:border-gray-600 dark:text-gray-200">
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <User size={16} className="text-gray-500 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">{order.customerName}</span>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{item.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-primary dark:text-primary-foreground">{formatPrice(item.price)}</span>
+                    <div className="flex items-center gap-2">
+                      <Phone size={16} className="text-gray-500 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">{order.customerPhone}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin size={16} className="text-gray-500 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">{order.customerAddress || (language === "en" ? "Address not complete" : "Alamat belum lengkap")}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CreditCard size={16} className="text-gray-500 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">{order.paymentMethod || (language === "en" ? "Payment method not selected" : "Metode pembayaran belum dipilih")}</span>
+                    </div>
+                    <div className="text-lg font-bold text-primary dark:text-primary-foreground">
+                      {text.total}: {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(order.total)}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={() => saveOrderStatus(order.id, 'pending')} variant="outline" size="sm">{text.pending}</Button>
+                      <Button onClick={() => saveOrderStatus(order.id, 'preparing')} variant="outline" size="sm">{text.preparing}</Button>
+                      <Button onClick={() => saveOrderStatus(order.id, 'ready')} variant="outline" size="sm">{text.ready}</Button>
+                      <Button onClick={() => saveOrderStatus(order.id, 'delivered')} variant="outline" size="sm">{text.delivered}</Button>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </div>
-        )}
+              ))
+            )}
+          </TabsContent>
 
-        {activeSection === 'accounts' && (
-          <div className="space-y-6">
-            <Card className="dark:bg-gray-800 dark:border-gray-700">
-              <CardHeader>
-                <CardTitle className="dark:text-gray-100">{text.manageAccounts}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="dark:text-gray-200">{text.username}</Label>
-                    <Input
-                      value={newAccount.username}
-                      onChange={(e) => setNewAccount({...newAccount, username: e.target.value})}
-                      placeholder={text.username}
-                      className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                    />
-                  </div>
-                  <div>
-                    <Label className="dark:text-gray-200">{text.password}</Label>
-                    <Input
-                      type="password"
-                      value={newAccount.password}
-                      onChange={(e) => setNewAccount({...newAccount, password: e.target.value})}
-                      placeholder={text.password}
-                      className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label className="dark:text-gray-200">{text.email}</Label>
-                  <Input
-                    type="email"
-                    value={newAccount.email}
-                    onChange={(e) => setNewAccount({...newAccount, email: e.target.value})}
-                    placeholder={text.email}
-                    className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                  />
-                </div>
-                <div>
-                  <Label className="dark:text-gray-200">{text.phone}</Label>
-                  <Input
-                    type="tel"
-                    value={newAccount.phone}
-                    onChange={(e) => setNewAccount({...newAccount, phone: e.target.value})}
-                    placeholder={text.phone}
-                    className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                  />
-                </div>
-                <div>
-                  <Label className="dark:text-gray-200">{text.role}</Label>
-                  <Select value={newAccount.role} onValueChange={(value: "admin" | "driver" | "cashier" | "user") => setNewAccount({...newAccount, role: value})}>
-                    <SelectTrigger className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                      <SelectItem value="user" className="dark:text-gray-100 dark:hover:bg-gray-600">User</SelectItem>
-                      <SelectItem value="cashier" className="dark:text-gray-100 dark:hover:bg-gray-600">Kasir</SelectItem>
-                      <SelectItem value="driver" className="dark:text-gray-100 dark:hover:bg-gray-600">Driver</SelectItem>
-                      <SelectItem value="admin" className="dark:text-gray-100 dark:hover:bg-gray-600">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button onClick={saveAccount}>{text.addAccount}</Button>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {accounts.map(account => (
-                <Card key={account.username} className="relative dark:bg-gray-800 dark:border-gray-700">
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold dark:text-gray-100">{account.username}</h3>
+          <TabsContent value="menu" className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{text.manageMenu}</h2>
+            {menuItems.length === 0 ? (
+              <p className="text-gray-600 dark:text-gray-400">{text.noComments}</p>
+            ) : (
+              menuItems.map(item => (
+                <Card key={item.id} className="bg-white/95 dark:bg-gray-800/95 backdrop-blur">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg text-gray-900 dark:text-gray-100">{item.name}</CardTitle>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setEditingAccount(account)} className="dark:border-gray-600 dark:text-gray-200">
-                          <Edit size={14} />
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={() => deleteAccount(account.username)} className="dark:border-gray-600 dark:text-gray-200">
-                          <Trash2 size={14} />
-                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => {
+                          const updatedName = prompt(text.menuName, item.name);
+                          if (updatedName !== null) {
+                            saveMenuItem({ ...item, name: updatedName });
+                          }
+                        }}>{text.edit}</Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteMenuItem(item.id)}>{text.delete}</Button>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Email: {account.email}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">Phone: {account.phone}</p>
-                    <Badge variant="outline" className="dark:border-gray-600 dark:text-gray-200">
-                      {getRoleDisplay(account.role)}
-                    </Badge>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 dark:text-gray-300">{text.description}: {item.description}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{text.price}: {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.price)}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{text.category}: {item.category === 'food' ? text.food : text.drink}</p>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </div>
-        )}
+              ))
+            )}
+          </TabsContent>
 
-        {activeSection === 'settings' && (
-          <Card className="dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader>
-              <CardTitle className="dark:text-gray-100">{text.settings}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label className="dark:text-gray-200">{text.changeWallpaper}</Label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleWallpaperChange}
-                  className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                />
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  {text.uploadImage}
-                </p>
-              </div>
-              {wallpaper && (
-                <div>
-                  <Label className="dark:text-gray-200">{text.wallpaperPreview}</Label>
-                  <img src={wallpaper} alt="Wallpaper Preview" className="w-32 h-20 object-cover rounded border" />
+          <TabsContent value="accounts" className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{text.manageAccounts}</h2>
+            {accounts.length === 0 ? (
+              <p className="text-gray-600 dark:text-gray-400">{text.noComments}</p>
+            ) : (
+              accounts.map(acc => (
+                <Card key={acc.id} className="bg-white/95 dark:bg-gray-800/95 backdrop-blur">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg text-gray-900 dark:text-gray-100">{acc.username}</CardTitle>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => setEditingAccount(acc)}>{text.edit}</Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteAccount(acc.id)}>{text.delete}</Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 dark:text-gray-300">{text.email}: {acc.email}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{text.phone2}: {acc.phone}</p>
+                    <p className="text-gray-700 dark:text-gray-300">{text.role}: {acc.role}</p>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </TabsContent>
+
+          <TabsContent value="comments" className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{text.allComments}</h2>
+            {comments.length === 0 ? (
+              <p className="text-gray-600 dark:text-gray-400">{text.noComments}</p>
+            ) : (
+              comments.map(comment => (
+                <Card key={comment.id} className="bg-white/95 dark:bg-gray-800/95 backdrop-blur">
+                  <CardContent>
+                    <p className="text-gray-700 dark:text-gray-300">{comment.message}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">- {comment.userName}</p>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </TabsContent>
+
+          <TabsContent value="footer" className="space-y-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{text.footerInformation}</h2>
+            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur">
+              <CardContent className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="dark:text-gray-300">{text.companyName}</Label>
+                    <Input
+                      value={footerInfo.companyName}
+                      onChange={(e) => setFooterInfo({...footerInfo, companyName: e.target.value})}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                    />
+                  </div>
+                  <div>
+                    <Label className="dark:text-gray-300">{text.contactPhone}</Label>
+                    <Input
+                      value={footerInfo.phone}
+                      onChange={(e) => setFooterInfo({...footerInfo, phone: e.target.value})}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                    />
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+                
+                <div>
+                  <Label className="dark:text-gray-300">{text.companyDescription}</Label>
+                  <Input
+                    value={footerInfo.description}
+                    onChange={(e) => setFooterInfo({...footerInfo, description: e.target.value})}
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="dark:text-gray-300">{text.contactEmail}</Label>
+                    <Input
+                      value={footerInfo.email}
+                      onChange={(e) => setFooterInfo({...footerInfo, email: e.target.value})}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                    />
+                  </div>
+                  <div>
+                    <Label className="dark:text-gray-300">{text.companyAddress}</Label>
+                    <Input
+                      value={footerInfo.address}
+                      onChange={(e) => setFooterInfo({...footerInfo, address: e.target.value})}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="dark:text-gray-300">{text.weekdayHours}</Label>
+                    <Input
+                      value={footerInfo.operationalHours.weekdays}
+                      onChange={(e) => setFooterInfo({
+                        ...footerInfo, 
+                        operationalHours: {
+                          ...footerInfo.operationalHours,
+                          weekdays: e.target.value
+                        }
+                      })}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                    />
+                  </div>
+                  <div>
+                    <Label className="dark:text-gray-300">{text.weekendHours}</Label>
+                    <Input
+                      value={footerInfo.operationalHours.weekend}
+                      onChange={(e) => setFooterInfo({
+                        ...footerInfo,
+                        operationalHours: {
+                          ...footerInfo.operationalHours,
+                          weekend: e.target.value
+                        }
+                      })}
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                    />
+                  </div>
+                </div>
+
+                <Button onClick={saveFooterInfo} className="w-full">
+                  {text.saveFooterInfo}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-
-      {/* Edit Item Modal */}
-      {editingItem && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader>
-              <CardTitle className="dark:text-gray-100">{text.editMenu}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label className="dark:text-gray-200">{text.menuName}</Label>
-                <Input
-                  value={editingItem.name}
-                  onChange={(e) => setEditingItem({...editingItem, name: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label className="dark:text-gray-200">{text.price}</Label>
-                <Input
-                  type="number"
-                  value={editingItem.price}
-                  onChange={(e) => setEditingItem({...editingItem, price: Number(e.target.value)})}
-                />
-              </div>
-              <div>
-                <Label className="dark:text-gray-200">{text.description}</Label>
-                <Input
-                  value={editingItem.description}
-                  onChange={(e) => setEditingItem({...editingItem, description: e.target.value})}
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={saveMenuItem} className="flex-1">Simpan</Button>
-                <Button variant="outline" onClick={() => setEditingItem(null)} className="flex-1">Batal</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
       {/* Edit Account Modal */}
       {editingAccount && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md dark:bg-gray-800 dark:border-gray-700">
+          <Card className="w-full max-w-md dark:bg-gray-800">
             <CardHeader>
-              <CardTitle className="dark:text-gray-100">{text.editAccount}</CardTitle>
+              <CardTitle className="dark:text-gray-200">{text.editAccount}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label className="dark:text-gray-200">{text.username}</Label>
+                <Label className="dark:text-gray-300">{text.username}</Label>
                 <Input
                   value={editingAccount.username}
                   onChange={(e) => setEditingAccount({...editingAccount, username: e.target.value})}
-                  className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                 />
               </div>
               <div>
-                <Label className="dark:text-gray-200">{text.email}</Label>
+                <Label className="dark:text-gray-300">{text.password}</Label>
                 <Input
-                  type="email"
+                  value={editingAccount.password}
+                  onChange={(e) => setEditingAccount({...editingAccount, password: e.target.value})}
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                />
+              </div>
+              <div>
+                <Label className="dark:text-gray-300">{text.email}</Label>
+                <Input
                   value={editingAccount.email}
                   onChange={(e) => setEditingAccount({...editingAccount, email: e.target.value})}
-                  className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                 />
               </div>
               <div>
-                <Label className="dark:text-gray-200">{text.phone}</Label>
+                <Label className="dark:text-gray-300">{text.phone2}</Label>
                 <Input
-                  type="tel"
                   value={editingAccount.phone}
                   onChange={(e) => setEditingAccount({...editingAccount, phone: e.target.value})}
-                  className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                 />
               </div>
               <div>
-                <Label className="dark:text-gray-200">{text.role}</Label>
-                <Select value={editingAccount.role} onValueChange={(value: "admin" | "driver" | "cashier" | "user") => setEditingAccount({...editingAccount, role: value})}>
-                  <SelectTrigger className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600">
+                <Label className="dark:text-gray-300">{text.role}</Label>
+                <Select 
+                  value={editingAccount.role} 
+                  onValueChange={(value: "admin" | "driver" | "cashier" | "user") => setEditingAccount({...editingAccount, role: value})}
+                >
+                  <SelectTrigger className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                    <SelectItem value="user" className="dark:text-gray-100 dark:hover:bg-gray-600">User</SelectItem>
-                    <SelectItem value="cashier" className="dark:text-gray-100 dark:hover:bg-gray-600">Kasir</SelectItem>
-                    <SelectItem value="driver" className="dark:text-gray-100 dark:hover:bg-gray-600">Driver</SelectItem>
-                    <SelectItem value="admin" className="dark:text-gray-100 dark:hover:bg-gray-600">Admin</SelectItem>
+                    <SelectItem value="admin" className="dark:text-gray-200">{text.admin}</SelectItem>
+                    <SelectItem value="driver" className="dark:text-gray-200">{text.driver}</SelectItem>
+                    <SelectItem value="cashier" className="dark:text-gray-200">{text.cashier}</SelectItem>
+                    <SelectItem value="user" className="dark:text-gray-200">{text.user}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex gap-2">
-                <Button onClick={saveAccount} className="flex-1">Simpan</Button>
-                <Button variant="outline" onClick={() => setEditingAccount(null)} className="flex-1 dark:border-gray-600 dark:text-gray-200">Batal</Button>
+                <Button onClick={saveAccount} className="flex-1">{text.save}</Button>
+                <Button variant="outline" onClick={() => setEditingAccount(null)} className="flex-1 dark:border-gray-600 dark:text-gray-300">{text.cancel}</Button>
               </div>
             </CardContent>
           </Card>

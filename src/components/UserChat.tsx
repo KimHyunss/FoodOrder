@@ -17,7 +17,15 @@ export const UserChat = ({ isOpen, onClose, onNewMessage }: UserChatProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [userName] = useState("Customer_" + Math.random().toString(36).substr(2, 9));
+  const [language, setLanguage] = useState("id");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language");
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
 
   useEffect(() => {
     const savedMessages = localStorage.getItem("chatMessages");
@@ -33,6 +41,23 @@ export const UserChat = ({ isOpen, onClose, onNewMessage }: UserChatProps) => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const getLanguageText = () => {
+    if (language === "en") {
+      return {
+        chatAdmin: "Chat Admin",
+        startChatWithAdmin: "Start chat with admin",
+        typeMessage: "Type message..."
+      };
+    }
+    return {
+      chatAdmin: "Chat Admin",
+      startChatWithAdmin: "Mulai chat dengan admin",
+      typeMessage: "Ketik pesan..."
+    };
+  };
+
+  const text = getLanguageText();
 
   const sendMessage = () => {
     if (!newMessage.trim()) return;
@@ -65,24 +90,24 @@ export const UserChat = ({ isOpen, onClose, onNewMessage }: UserChatProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <Card className="w-80 h-96 bg-white shadow-xl border">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <Card className="w-full max-w-md h-96 bg-white dark:bg-gray-800 shadow-xl border dark:border-gray-700">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg text-gray-800 flex items-center gap-2">
+          <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-2">
             <MessageCircle size={20} />
-            Chat Admin
+            {text.chatAdmin}
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={onClose} className="dark:text-gray-300">
             <X size={16} />
           </Button>
         </CardHeader>
         <CardContent className="flex flex-col h-80">
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-3 bg-gray-50 rounded-lg">
+          <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
             {messages.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <MessageCircle size={48} className="mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Mulai chat dengan admin</p>
+                <p className="text-sm">{text.startChatWithAdmin}</p>
               </div>
             ) : (
               messages.map((message) => (
@@ -94,12 +119,12 @@ export const UserChat = ({ isOpen, onClose, onNewMessage }: UserChatProps) => {
                     className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
                       message.sender === 'user'
                         ? 'bg-primary text-white'
-                        : 'bg-white border border-gray-200 text-gray-800'
+                        : 'bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 text-gray-800 dark:text-gray-200'
                     }`}
                   >
                     <p>{message.message}</p>
                     <p className={`text-xs mt-1 ${
-                      message.sender === 'user' ? 'text-primary-foreground/70' : 'text-gray-500'
+                      message.sender === 'user' ? 'text-primary-foreground/70' : 'text-gray-500 dark:text-gray-400'
                     }`}>
                       {formatTime(message.timestamp)}
                     </p>
@@ -115,9 +140,9 @@ export const UserChat = ({ isOpen, onClose, onNewMessage }: UserChatProps) => {
             <Input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Ketik pesan..."
+              placeholder={text.typeMessage}
               onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-              className="text-sm"
+              className="text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
             />
             <Button onClick={sendMessage} size="sm" className="gap-1">
               <Send size={14} />

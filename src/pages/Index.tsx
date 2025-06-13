@@ -9,7 +9,7 @@ import { Footer } from "@/components/Footer";
 import { UserChat } from "@/components/UserChat";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Bell } from "lucide-react";
+import { MessageCircle, Bell, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export type MenuItem = {
@@ -44,17 +44,26 @@ export type Order = {
 
 const Index = () => {
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'menu' | 'cart' | 'orders'>('menu');
+  const [activeTab, setActiveTab] = useState<'home' | 'menu' | 'cart' | 'orders'>('home');
+  const [menuFilter, setMenuFilter] = useState<'all' | 'food' | 'drink'>('all');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [hasNewMessages, setHasNewMessages] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [language, setLanguage] = useState("id");
   const { toast } = useToast();
   const navigate = useNavigate();
 
   // Check if user is logged in for cart/orders access
   const isUserLoggedIn = localStorage.getItem("userLoggedIn");
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language");
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
 
   // Check URL parameters for tab
   useEffect(() => {
@@ -99,17 +108,48 @@ const Index = () => {
     if (notifications.length > 0) {
       const latestNotification = notifications[notifications.length - 1];
       toast({
-        title: "Pesan Baru dari Admin",
+        title: language === "en" ? "New Message from Admin" : "Pesan Baru dari Admin",
         description: latestNotification.message,
       });
     }
-  }, [notifications.length, toast]);
+  }, [notifications.length, toast, language]);
+
+  const getLanguageText = () => {
+    if (language === "en") {
+      return {
+        orderNow: "Order Now",
+        chooseFavorite: "Choose Your Favorite Menu",
+        allMenu: "All Menu",
+        food: "Food",
+        drinks: "Drinks",
+        foodDrinks: "Food & Drinks Menu",
+        selectFavorite: "Choose your favorite food and drinks",
+        allFoodDrinks: "All Food & Drinks",
+        newMessageFromAdmin: "New Message from Admin",
+        newMessages: "new messages"
+      };
+    }
+    return {
+      orderNow: "Pesan Sekarang",
+      chooseFavorite: "Pilih Menu Favorit Anda",
+      allMenu: "Semua Menu",
+      food: "Makanan",
+      drinks: "Minuman",
+      foodDrinks: "Menu Makanan & Minuman",
+      selectFavorite: "Pilih makanan dan minuman favorit Anda",
+      allFoodDrinks: "Semua Makanan Minuman",
+      newMessageFromAdmin: "Pesan Baru dari Admin",
+      newMessages: "pesan baru"
+    };
+  };
+
+  const text = getLanguageText();
 
   const addToCart = (item: MenuItem) => {
     if (!isUserLoggedIn) {
       toast({
-        title: "Login Diperlukan",
-        description: "Anda harus login terlebih dahulu untuk menambahkan item ke keranjang",
+        title: language === "en" ? "Login Required" : "Login Diperlukan",
+        description: language === "en" ? "You must login first to add items to cart" : "Anda harus login terlebih dahulu untuk menambahkan item ke keranjang",
         variant: "destructive"
       });
       navigate("/user/login");
@@ -148,8 +188,8 @@ const Index = () => {
   const placeOrder = (customerName: string, customerPhone: string, customerAddress: string, paymentMethod: string) => {
     if (!isUserLoggedIn) {
       toast({
-        title: "Login Diperlukan",
-        description: "Anda harus login terlebih dahulu untuk memesan",
+        title: language === "en" ? "Login Required" : "Login Diperlukan",
+        description: language === "en" ? "You must login first to place an order" : "Anda harus login terlebih dahulu untuk memesan",
         variant: "destructive"
       });
       navigate("/user/login");
@@ -179,11 +219,11 @@ const Index = () => {
     setActiveTab('orders');
   };
 
-  const handleTabChange = (tab: 'menu' | 'cart' | 'orders') => {
+  const handleTabChange = (tab: 'home' | 'menu' | 'cart' | 'orders') => {
     if ((tab === 'cart' || tab === 'orders') && !isUserLoggedIn) {
       toast({
-        title: "Login Diperlukan",
-        description: "Anda harus login terlebih dahulu untuk mengakses fitur ini",
+        title: language === "en" ? "Login Required" : "Login Diperlukan",
+        description: language === "en" ? "You must login first to access this feature" : "Anda harus login terlebih dahulu untuk mengakses fitur ini",
         variant: "destructive"
       });
       navigate("/user/login");
@@ -203,6 +243,10 @@ const Index = () => {
     setNotifications([]);
   };
 
+  const handleChatClose = () => {
+    setIsChatOpen(false);
+  };
+
   const handleNewMessage = () => {
     // This will be called when user sends a message
   };
@@ -210,7 +254,7 @@ const Index = () => {
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100">
       <Navigation 
         activeTab={activeTab} 
         setActiveTab={handleTabChange}
@@ -218,8 +262,69 @@ const Index = () => {
       />
       
       <main className="pt-20 pb-8">
+        {activeTab === 'home' && (
+          <div className="space-y-16">
+            {/* Hero/Promotion Section */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center space-y-8">
+                <div className="relative inline-block">
+                  <img 
+                    src="/placeholder.svg" 
+                    alt="Delicious Food" 
+                    className="w-96 h-64 object-cover rounded-2xl shadow-2xl mx-auto"
+                  />
+                  <div className="absolute inset-0 bg-black/30 rounded-2xl flex items-center justify-center">
+                    <div className="text-white text-center space-y-4">
+                      <h1 className="text-4xl font-bold">FoodOrder</h1>
+                      <p className="text-xl">{language === "en" ? "Delicious food delivered to your door" : "Makanan lezat diantar ke pintu Anda"}</p>
+                    </div>
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => setActiveTab('menu')} 
+                  className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg rounded-xl shadow-lg"
+                >
+                  {text.orderNow}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </section>
+
+            {/* Menu Selection Section */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center space-y-8">
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{text.chooseFavorite}</h2>
+                
+                <div className="flex justify-center space-x-4">
+                  <Button
+                    onClick={() => setActiveTab('menu')}
+                    variant={menuFilter === 'all' ? 'default' : 'outline'}
+                    className="px-6 py-3 rounded-lg"
+                  >
+                    {text.allMenu}
+                  </Button>
+                  <Button
+                    onClick={() => { setActiveTab('menu'); setMenuFilter('food'); }}
+                    variant={menuFilter === 'food' ? 'default' : 'outline'}
+                    className="px-6 py-3 rounded-lg"
+                  >
+                    {text.food}
+                  </Button>
+                  <Button
+                    onClick={() => { setActiveTab('menu'); setMenuFilter('drink'); }}
+                    variant={menuFilter === 'drink' ? 'default' : 'outline'}
+                    className="px-6 py-3 rounded-lg"
+                  >
+                    {text.drinks}
+                  </Button>
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+        
         {activeTab === 'menu' && (
-          <Menu onAddToCart={addToCart} />
+          <Menu onAddToCart={addToCart} filter={menuFilter} />
         )}
         
         {activeTab === 'cart' && isUserLoggedIn && (
@@ -256,14 +361,14 @@ const Index = () => {
         <div className="fixed top-20 right-4 z-50">
           <div className="bg-red-500 text-white px-3 py-2 rounded-lg shadow-lg flex items-center gap-2">
             <Bell size={16} />
-            <span className="text-sm">{notifications.length} pesan baru</span>
+            <span className="text-sm">{notifications.length} {text.newMessages}</span>
           </div>
         </div>
       )}
       
       <UserChat 
         isOpen={isChatOpen}
-        onClose={() => setIsChatOpen(false)}
+        onClose={handleChatClose}
         onNewMessage={handleNewMessage}
       />
       

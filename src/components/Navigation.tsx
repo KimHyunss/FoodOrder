@@ -117,6 +117,7 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
   const getLanguageText = () => {
     if (language === "en") {
       return {
+        home: "Home",
         menu: "Menu",
         cart: "Cart", 
         orders: "Orders",
@@ -133,6 +134,7 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
       };
     }
     return {
+      home: "Home",
       menu: "Menu",
       cart: "Keranjang",
       orders: "Pesanan", 
@@ -218,6 +220,15 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
           
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
+              <button 
+                onClick={() => setActiveTab('home')}
+                className={`hover:text-primary hover:bg-primary/20 transition-colors duration-200 flex items-center gap-2 px-3 py-2 rounded-lg ${
+                  activeTab === 'home' ? 'text-primary bg-primary/20' : 'text-gray-700 dark:text-gray-200'
+                }`}
+              >
+                <Utensils size={18} />
+                {text.home}
+              </button>
               <button 
                 onClick={() => setActiveTab('menu')}
                 className={`hover:text-primary hover:bg-primary/20 transition-colors duration-200 flex items-center gap-2 px-3 py-2 rounded-lg ${
@@ -310,6 +321,14 @@ export const Navigation = ({ activeTab, setActiveTab, cartItemCount }: Navigatio
       {isOpen && (
         <div className="md:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur border-b border-white/20 dark:border-gray-700/20">
           <div className="px-2 pt-2 pb-3 space-y-1">
+            <button 
+              onClick={() => { setActiveTab('home'); setIsOpen(false); }}
+              className={`block px-3 py-2 hover:text-primary hover:bg-primary/10 transition-colors w-full text-left rounded-lg ${
+                activeTab === 'home' ? 'text-primary bg-primary/10' : 'text-gray-700 dark:text-gray-200'
+              }`}
+            >
+              {text.home}
+            </button>
             <button 
               onClick={() => { setActiveTab('menu'); setIsOpen(false); }}
               className={`block px-3 py-2 hover:text-primary hover:bg-primary/10 transition-colors w-full text-left rounded-lg ${
