@@ -32,12 +32,27 @@ export const Cart = ({ items, onUpdateQuantity, onClearCart, onPlaceOrder }: Car
     }
 
     // Auto-fill user information from logged in account
-    const currentUser = localStorage.getItem("currentUser");
-    if (currentUser) {
-      const userData = JSON.parse(currentUser);
-      setCustomerName(userData.username || "");
-      setCustomerPhone(userData.phone || "");
-      setCustomerAddress(userData.address || "");
+    const currentUserData = localStorage.getItem("currentUserData");
+    if (currentUserData) {
+      try {
+        const userData = JSON.parse(currentUserData);
+        setCustomerName(userData.username || "");
+        setCustomerPhone(userData.phone || "");
+        setCustomerAddress(userData.address || "");
+      } catch (error) {
+        console.error("Error parsing currentUserData:", error);
+        // Fallback to currentUser if currentUserData fails
+        const currentUser = localStorage.getItem("currentUser");
+        if (currentUser) {
+          setCustomerName(currentUser);
+        }
+      }
+    } else {
+      // Fallback to currentUser if no currentUserData
+      const currentUser = localStorage.getItem("currentUser");
+      if (currentUser) {
+        setCustomerName(currentUser);
+      }
     }
   }, []);
 

@@ -84,8 +84,16 @@ const UserLogin = () => {
 
     // Fallback to default user
     if (username === "UserX" && password === "User123") {
+      const defaultUserData = {
+        username: "UserX",
+        phone: "",
+        email: "",
+        address: ""
+      };
+      
       localStorage.setItem("userLoggedIn", "true");
       localStorage.setItem("currentUser", username);
+      localStorage.setItem("currentUserData", JSON.stringify(defaultUserData));
       
       toast({
         title: text.loginSuccess,
